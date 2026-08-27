@@ -1,0 +1,22 @@
+# syntax=docker/dockerfile:1
+
+# Comments are provided throughout this file to help you get started.
+# If you need more help, visit the Dockerfile reference guide at
+# https://docs.docker.com/go/dockerfile-reference/
+
+# serve with hot-reload. Used directly in development via compose.yaml.
+FROM mcr.microsoft.com/dotnet/sdk:10.0
+
+WORKDIR /app
+
+COPY *.csproj ./
+
+RUN dotnet restore
+
+COPY . .
+
+# Expose the port that the application listens on.
+EXPOSE 8080
+
+# Run the application in development mode.
+CMD ["dotnet", "watch", "run", "--urls", "http://0.0.0.0:8080"]

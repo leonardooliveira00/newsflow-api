@@ -1,0 +1,6 @@
+@NewsflowApi_HostAddress = http://localhost:5031
+
+GET {{NewsflowApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
