@@ -12,8 +12,7 @@ namespace NewsflowApi.Data.Configurations
         {
             builder.ToTable("permissions");
 
-            builder.HasKey(permission => permission.PermissionId);
-            builder.Property(permission => permission.PermissionId).HasColumnName("permission_id");
+            builder.HasKey(permission => permission.Id);
 
             builder.Property(permission => permission.Name).HasColumnName("name").HasMaxLength(50).IsRequired();
             builder.HasIndex(permission => permission.Name).IsUnique();

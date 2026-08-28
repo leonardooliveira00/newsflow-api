@@ -10,8 +10,7 @@ namespace NewsflowApi.Data.Configurations
         {
             builder.ToTable("roles");
 
-            builder.HasKey(role => role.RoleId);
-            builder.Property(role => role.RoleId).HasColumnName("role_id");
+            builder.HasKey(role => role.Id);
 
             builder.Property(role => role.RoleName).HasColumnName("name").HasMaxLength(50).IsRequired();
             builder.HasIndex(role => role.RoleName).IsUnique();

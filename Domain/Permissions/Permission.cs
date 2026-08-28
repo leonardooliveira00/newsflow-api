@@ -4,7 +4,7 @@ namespace NewsflowApi.Domain.Permissions
 {
     public class Permission : AuditableEntity
     {
-        public Guid PermissionId { get; set; }
+        public Guid Id { get; set; }
 
         public required string Name { get; set; }
 
