@@ -1,7 +1,6 @@
-﻿using NewsflowApi.Domain.Users;
-using NewsflowApi.Domain.Roles;
+﻿using NewsflowApi.Domain.Identity.Users;
 
-namespace NewsflowApi.Domain.UserRoles
+namespace NewsflowApi.Domain.Authorization
 {
     public class UserRole
     {

@@ -1,27 +1,13 @@
-using NewsflowApi.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 
-using NewsflowApi.Domain.Users;
+using NewsflowApi.Data;
+using NewsflowApi.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-    ?? throw new InvalidOperationException(
-        "Connection String 'DefaultConnection' not found."
-        );
-
-builder.Services.AddDbContext<NewsflowDbContext>(options => options.UseNpgsql(connectionString));
-
-builder.Services.AddIdentityCore<User>(options =>
-{
-    options.User.RequireUniqueEmail = true;
-    options.SignIn.RequireConfirmedEmail = true;
-
-    options.Lockout.MaxFailedAccessAttempts = 5;
-    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
-    options.Lockout.AllowedForNewUsers = true;
-}).AddEntityFrameworkStores<NewsflowDbContext>().AddSignInManager().AddDefaultTokenProviders();
+builder.Services.AddNewsflowDatabase(builder.Configuration);
+builder.Services.AddNewsflowIdentity();
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
@@ -35,6 +21,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

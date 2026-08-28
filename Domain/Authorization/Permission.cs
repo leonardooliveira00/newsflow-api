@@ -1,6 +1,6 @@
 ﻿using NewsflowApi.Domain.Common;
 
-namespace NewsflowApi.Domain.Permissions
+namespace NewsflowApi.Domain.Authorization
 {
     public class Permission : AuditableEntity
     {

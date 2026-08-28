@@ -1,7 +1,7 @@
 ﻿using NewsflowApi.Domain.Common;
-using NewsflowApi.Domain.Users;
+using NewsflowApi.Domain.Identity.Users;
 
-namespace NewsflowApi.Domain.Staffs
+namespace NewsflowApi.Domain.Identity.Staffs
 {
     public class Staff : AuditableEntity
     {

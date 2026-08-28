@@ -1,7 +1,4 @@
-﻿using NewsflowApi.Domain.Permissions;
-using NewsflowApi.Domain.Roles;
-
-namespace NewsflowApi.Domain.RolePermissions
+﻿namespace NewsflowApi.Domain.Authorization
 {
     public class RolePermission
     {

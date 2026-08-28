@@ -1,14 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using NewsflowApi.Domain.UserRoles;
+using NewsflowApi.Domain.Authorization;
 
-namespace NewsflowApi.Data.Configurations
+namespace NewsflowApi.Data.Configurations.Authorization
 {
     public class UserRoleConfiguration : IEntityTypeConfiguration<UserRole>
     {
         public void Configure(EntityTypeBuilder<UserRole> builder)
         {
-            builder.ToTable("user_roles");
+            builder.ToTable("UserRoles");
 
             builder.HasKey(userRole => new
             {
@@ -16,11 +16,11 @@ namespace NewsflowApi.Data.Configurations
                 userRole.RoleId
             });
 
-            builder.Property(userRole => userRole.UserId).HasColumnName("user_id");
+            builder.Property(userRole => userRole.UserId);
 
-            builder.Property(userRole => userRole.RoleId).HasColumnName("role_id");
+            builder.Property(userRole => userRole.RoleId);
 
-            builder.Property(userRole => userRole.AssignedAt).HasColumnName("assigned_at");
+            builder.Property(userRole => userRole.AssignedAt);
 
             builder.HasOne(userRole => userRole.User).WithMany().HasForeignKey(userRole => userRole.UserId);
 

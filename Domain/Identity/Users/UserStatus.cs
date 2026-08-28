@@ -1,4 +1,4 @@
-﻿namespace NewsflowApi.Domain.Users
+﻿namespace NewsflowApi.Domain.Identity.Users
 {
     public enum UserStatus
     {

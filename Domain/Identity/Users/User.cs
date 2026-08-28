@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using NewsflowApi.Domain.Common;
-using NewsflowApi.Domain.Staffs;
+using NewsflowApi.Domain.Identity.Staffs;
 
-namespace NewsflowApi.Domain.Users
+namespace NewsflowApi.Domain.Identity.Users
 {
     public class User : IdentityUser<Guid>, IAuditableEntity
     {
