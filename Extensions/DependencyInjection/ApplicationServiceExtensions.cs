@@ -1,6 +1,6 @@
 ﻿using NewsflowApi.Application.Authentication;
 
-namespace NewsflowApi.Extensions
+namespace NewsflowApi.Extensions.DependencyInjection
 {
     public static class ApplicationServiceExtensions
     {

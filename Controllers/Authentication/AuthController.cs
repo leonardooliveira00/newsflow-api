@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using NewsflowApi.Application.Authentication;
 using NewsflowApi.Application.Common;
 using NewsflowApi.Contracts.Authentication;
+using NewsflowApi.Extensions.Http;
 
 namespace NewsflowApi.Controllers.Authentication
 {
@@ -23,42 +24,12 @@ namespace NewsflowApi.Controllers.Authentication
         {
             var result = await _authService.SignInAsync(request.Email, request.Password);
 
-            if (result.Succeeded) return Ok();
-
-            return result.ErrorCode switch
+            if (!result.Succeeded)
             {
-                "invalid_credentials" => Unauthorized(new
-                {
-                    code = result.ErrorCode,
-                    message = result.ErrorMessage
-                }),
+                return result.ToErrorResult();
+            }
 
-                "user_not_active" => StatusCode(StatusCodes.Status403Forbidden, new
-                {
-                    code = result.ErrorCode,
-                    message = result.ErrorMessage
-                }),
-
-                "user_locked_out" => StatusCode(StatusCodes.Status423Locked, new
-                {
-                    code = result.ErrorCode,
-                    message = result.ErrorMessage
-                }),
-
-                "signin_not_allowed" => StatusCode(StatusCodes.Status403Forbidden, new
-                {
-                    code = result.ErrorCode,
-                    message = result.ErrorMessage
-                }),
-
-                "two_factor_required" => Unauthorized(new
-                {
-                    code = result.ErrorCode,
-                    message = result.ErrorMessage
-                }),
-
-                _ => StatusCode(StatusCodes.Status500InternalServerError)
-            };
+            return Ok();
         }
 
         [Authorize]
@@ -69,7 +40,7 @@ namespace NewsflowApi.Controllers.Authentication
 
             if (!result.Succeeded)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError);
+                return result.ToErrorResult();
             }
 
             return NoContent();

@@ -2,7 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 
 using NewsflowApi.Data;
-using NewsflowApi.Extensions;
+using NewsflowApi.Extensions.DependencyInjection;
+using NewsflowApi.Extensions.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
 

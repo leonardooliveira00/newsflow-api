@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using NewsflowApi.Application.Authentication;
 using NewsflowApi.Contracts.Authentication;
+using NewsflowApi.Extensions.Http;
 
 namespace NewsflowApi.Controllers.Authentication
 {
@@ -21,30 +22,12 @@ namespace NewsflowApi.Controllers.Authentication
         {
             var result = await _invitationService.GenerateInvitationTokenAsync(userId);
 
-            if (result.Succeeded)
+            if (!result.Succeeded) return result.ToErrorResult();
+
+            return Ok(new
             {
-                return Ok(new
-                {
-                    token = result.Data
-                });
-            }
-
-            return result.ErrorCode switch
-            {
-                "user_not_found" => NotFound(new
-                {
-                    code = result.ErrorCode,
-                    message = result.ErrorMessage
-                }),
-
-                "user_not_pending" => Conflict(new
-                {
-                    code = result.ErrorCode,
-                    message = result.ErrorMessage
-                }),
-
-                _ => StatusCode(StatusCodes.Status500InternalServerError)
-            };
+                token = result.Data
+            });
         }
 
         [HttpPost("accept")]
@@ -56,42 +39,9 @@ namespace NewsflowApi.Controllers.Authentication
                 request.Password
                 );
 
-            if (result.Succeeded)
-            {
-                return Ok();
-            }
+            if (!result.Succeeded) return result.ToErrorResult();
 
-            return result.ErrorCode switch
-            {
-                "user_not_found" => NotFound(new
-                {
-                    code = result.ErrorCode,
-                    message = result.ErrorMessage
-                }),
-                "user_not_pending" => Conflict(new
-                {
-                    code = result.ErrorCode,
-                    message = result.ErrorMessage
-                }),
-                "invalid_invitation_token" => BadRequest(new
-                {
-                    code = result.ErrorCode,
-                    message = result.ErrorMessage
-                }),
-                "password_creation_failed" => BadRequest(new
-                {
-                    code = result.ErrorCode,
-                    message = result.ErrorMessage
-                }),
-                "user_activation_failed" => StatusCode(
-                    StatusCodes.Status500InternalServerError, new
-                    {
-                        code = result.ErrorCode,
-                        message = result.ErrorMessage
-                    }),
-
-                _ => StatusCode(StatusCodes.Status500InternalServerError)
-            };
+            return Ok();
         }
     }
 }

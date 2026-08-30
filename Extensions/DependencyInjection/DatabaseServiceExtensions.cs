@@ -2,7 +2,7 @@
 using NewsflowApi.Data;
 using NewsflowApi.Data.Seeds;
 
-namespace NewsflowApi.Extensions;
+namespace NewsflowApi.Extensions.DependencyInjection;
 
 public static class DatabaseServiceExtensions
 {

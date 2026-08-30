@@ -5,7 +5,7 @@ using NewsflowApi.Data;
 using NewsflowApi.Domain.Identity.Users;
 using NewsflowApi.Settings;
 
-namespace NewsflowApi.Extensions;
+namespace NewsflowApi.Extensions.DependencyInjection;
 
 public static class IdentityServiceExtensions
 {

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.DataProtection;
 
-namespace NewsflowApi.Extensions
+namespace NewsflowApi.Extensions.DependencyInjection
 {
     public static class DataProtectionServiceExtensions
     {

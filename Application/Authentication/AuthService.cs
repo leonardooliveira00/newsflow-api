@@ -32,7 +32,8 @@ namespace NewsflowApi.Application.Authentication
             {
                 return ApplicationResult.Failure(
                     "staff_not_found",
-                    "Staff not found."
+                    "Staff not found.",
+                    ApplicationErrorType.NotFound
                     );
             }
 
@@ -40,7 +41,8 @@ namespace NewsflowApi.Application.Authentication
             {
                 return ApplicationResult.Failure(
                     "staff_already_has_user",
-                    "Staff already has a user."
+                    "Staff already has a user.",
+                    ApplicationErrorType.Conflict
                     );
             }
 
@@ -50,7 +52,8 @@ namespace NewsflowApi.Application.Authentication
             {
                 return ApplicationResult.Failure(
                     "email_already_in_use",
-                    "Email is already associated with another user."
+                    "Email is already associated with another user.",
+                    ApplicationErrorType.Conflict
                     );
             }
 
@@ -75,7 +78,8 @@ namespace NewsflowApi.Application.Authentication
 
                 return ApplicationResult.Failure(
                     "user_creation_failed",
-                    errorMessage
+                    errorMessage,
+                    ApplicationErrorType.Validation
                     );
             }
 
@@ -88,12 +92,14 @@ namespace NewsflowApi.Application.Authentication
 
             if (user is null) return ApplicationResult.Failure(
                 "invalid_credentials",
-                "Invalid email or password."
+                "Invalid email or password.",
+                ApplicationErrorType.Unauthorized
                 );
 
             if (user.Status != UserStatus.Active) return ApplicationResult.Failure(
                 "user_not_active",
-                "User account is not active."
+                "User account is not active.",
+                ApplicationErrorType.Forbidden
                 );
 
             var signInResult = await _signInManager.PasswordSignInAsync(
@@ -107,7 +113,8 @@ namespace NewsflowApi.Application.Authentication
             {
                 return ApplicationResult.Failure(
                     "user_locked_out",
-                    "User account is temporarily locked."
+                    "User account is temporarily locked.",
+                    ApplicationErrorType.Locked
                 );
             }
 
@@ -115,7 +122,8 @@ namespace NewsflowApi.Application.Authentication
             {
                 return ApplicationResult.Failure(
                     "signin_not_allowed",
-                    "Sign in is not allowed for this account."
+                    "Sign in is not allowed for this account.",
+                    ApplicationErrorType.Forbidden
                 );
             }
 
@@ -123,7 +131,8 @@ namespace NewsflowApi.Application.Authentication
             {
                 return ApplicationResult.Failure(
                     "two_factor_required",
-                    "Two-factor authentication is required."
+                    "Two-factor authentication is required.",
+                    ApplicationErrorType.Unauthorized
                 );
             }
 
@@ -131,7 +140,8 @@ namespace NewsflowApi.Application.Authentication
             {
                 return ApplicationResult.Failure(
                     "invalid_credentials",
-                    "Invalid email or password."
+                    "Invalid email or password.",
+                    ApplicationErrorType.Unauthorized
                 );
             }
 

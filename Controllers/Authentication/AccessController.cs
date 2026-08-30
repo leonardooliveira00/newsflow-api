@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using NewsflowApi.Application.Authentication;
 using NewsflowApi.Contracts.Authentication;
+using NewsflowApi.Extensions.Http;
 
 namespace NewsflowApi.Controllers.Authentication
 {
@@ -17,34 +18,16 @@ namespace NewsflowApi.Controllers.Authentication
         }
 
         [HttpPost]
-        public async Task<ActionResult> CreateAccess([FromBody] CreateUserForStaffRequest request)
+        public async Task<IActionResult> CreateAccess([FromBody] CreateUserForStaffRequest request)
         {
             var result = await _authService.CreateUserForStaffAsync(request.StaffId, request.Email);
 
-            if (result.Succeeded) return StatusCode(StatusCodes.Status201Created);
-
-            return result.ErrorCode switch
+            if (!result.Succeeded)
             {
-                "staff_not_found" => NotFound(new
-                {
-                    code = result.ErrorCode,
-                    message = result.ErrorMessage
-                }),
+                return result.ToErrorResult();
+            }
 
-                "staff_already_has_user" or "email_already_in_use" => Conflict(new
-                {
-                    code = result.ErrorCode,
-                    message = result.ErrorMessage
-                }),
-
-                "user_creation_failed" => BadRequest(new
-                {
-                    code = result.ErrorCode,
-                    message = result.ErrorMessage
-                }),
-
-                _ => StatusCode(StatusCodes.Status500InternalServerError)
-            };
+            return StatusCode(StatusCodes.Status201Created);
         }
     }
 }

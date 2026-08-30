@@ -1,6 +1,6 @@
 ﻿using NewsflowApi.Data.Seeds;
 
-namespace NewsflowApi.Extensions
+namespace NewsflowApi.Extensions.Hosting
 {
     public static class DevelopmentSeedExtensions
     {

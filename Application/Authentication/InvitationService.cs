@@ -24,12 +24,14 @@ namespace NewsflowApi.Application.Authentication
 
             if (user is null) return ApplicationResult<string>.Failure(
                 "user_not_found",
-                "User not found"
+                "User not found",
+                ApplicationErrorType.NotFound
                 );
 
             if (user.Status != UserStatus.Pending) return ApplicationResult<string>.Failure(
                 "user_not_pending",
-                "User is not pending activation."
+                "User is not pending activation.",
+                ApplicationErrorType.Conflict
                 );
 
             var invitationToken = await _userManager.GenerateUserTokenAsync(
@@ -41,18 +43,20 @@ namespace NewsflowApi.Application.Authentication
             return ApplicationResult<string>.Success(invitationToken);
         }
 
-        public async Task<ApplicationResult> ValidateInvitationTokenAsync(Guid userId, string invitationToken)
+        public async Task<ApplicationResult<User>> ValidateInvitationTokenAsync(Guid userId, string invitationToken)
         {
             var user = await _userManager.FindByIdAsync(userId.ToString());
 
-            if (user is null) return ApplicationResult.Failure(
+            if (user is null) return ApplicationResult<User>.Failure(
                 "user_not_found",
-                "User not found"
+                "User not found",
+                ApplicationErrorType.NotFound
                 );
 
-            if (user.Status != UserStatus.Pending) return ApplicationResult.Failure(
+            if (user.Status != UserStatus.Pending) return ApplicationResult<User>.Failure(
                 "user_not_pending",
-                "User is not pending activation."
+                "User is not pending activation.",
+                ApplicationErrorType.Conflict
                 );
 
             var isTokenValid = await _userManager.VerifyUserTokenAsync(
@@ -62,12 +66,13 @@ namespace NewsflowApi.Application.Authentication
                 invitationToken
                 );
 
-            if (!isTokenValid) return ApplicationResult.Failure(
-                "invalid_invitation_toke",
-                "Invitation token invalid ou expired."
+            if (!isTokenValid) return ApplicationResult<User>.Failure(
+                "invalid_invitation_token",
+                "Invitation token invalid or expired.",
+                ApplicationErrorType.Validation
                 );
 
-            return ApplicationResult.Success();
+            return ApplicationResult<User>.Success(user);
         }
 
         public async Task<ApplicationResult> AcceptInvitationTokenAsync(Guid userId, string invitationToken, string password)
@@ -76,12 +81,7 @@ namespace NewsflowApi.Application.Authentication
 
             if (!validationResult.Succeeded) return validationResult;
 
-            var user = await _userManager.FindByIdAsync(userId.ToString());
-
-            if (user is null) return ApplicationResult.Failure(
-                "user_not_found",
-                "User not found."
-                );
+            var user = validationResult.Data!;
 
             await using var transaction = await _context.Database.BeginTransactionAsync();
 
@@ -98,7 +98,8 @@ namespace NewsflowApi.Application.Authentication
 
                 return ApplicationResult.Failure(
                     "password_creation_failed",
-                    errorMessage
+                    errorMessage,
+                    ApplicationErrorType.Validation
                     );
             }
 
@@ -109,7 +110,7 @@ namespace NewsflowApi.Application.Authentication
 
             if (!updatedResult.Succeeded)
             {
-                await transaction.RollbackAsync();  
+                await transaction.RollbackAsync();
 
                 var errorMessage = string.Join(
                     " ",
@@ -118,7 +119,8 @@ namespace NewsflowApi.Application.Authentication
 
                 return ApplicationResult.Failure(
                     "user_activation_failed",
-                    errorMessage
+                    errorMessage,
+                    ApplicationErrorType.Internal
                     );
             }
 
