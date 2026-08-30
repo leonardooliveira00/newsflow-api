@@ -7,12 +7,16 @@ using NewsflowApi.Extensions;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddNewsflowDatabase(builder.Configuration);
-builder.Services.AddNewsflowIdentity();
+builder.Services.AddNewsflowDataProtection();
+builder.Services.AddNewsflowIdentity(builder.Configuration);
+builder.Services.AddNewsflowApplication();
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
+
+await app.DevelopmentSeedDataAsync();
 
 if (app.Environment.IsDevelopment())
 {

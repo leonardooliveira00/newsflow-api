@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NewsflowApi.Data;
+using NewsflowApi.Data.Seeds;
 
 namespace NewsflowApi.Extensions;
 
@@ -18,6 +19,8 @@ public static class DatabaseServiceExtensions
         services.AddDbContext<NewsflowDbContext>(options =>
             options.UseNpgsql(connectionString)
         );
+
+        services.AddScoped<DevelopmentSeeder>();
 
         return services;
     }

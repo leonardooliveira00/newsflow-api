@@ -26,6 +26,7 @@ services:
       - .:/app
       - dotnet_bin:/app/bin
       - dotnet_obj:/app/obj
+      - data_protection_keys:/app/data-protection-keys
 
   postgres:
     image: postgres:18
@@ -75,3 +76,4 @@ volumes:
   redis_data:
   dotnet_bin:
   dotnet_obj:
+  data_protection_keys:
