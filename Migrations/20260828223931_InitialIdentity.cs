@@ -32,8 +32,8 @@ namespace NewsflowApi.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    RoleName = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    RoleDescription = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    Name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    Description = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
@@ -224,9 +224,9 @@ namespace NewsflowApi.Migrations
                 column: "PermissionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Roles_RoleName",
+                name: "IX_Roles_Name",
                 table: "Roles",
-                column: "RoleName",
+                column: "Name",
                 unique: true);
 
             migrationBuilder.CreateIndex(

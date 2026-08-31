@@ -6,8 +6,8 @@ namespace NewsflowApi.Domain.Authorization
     {
         public Guid Id { get; set; }
 
-        public required string RoleName { get; set; }
+        public required string Name { get; set; }
 
-        public string? RoleDescription { get; set; }
+        public string? Description { get; set; }
     }
 }

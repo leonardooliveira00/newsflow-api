@@ -20,6 +20,10 @@ public static class DatabaseServiceExtensions
             options.UseNpgsql(connectionString)
         );
 
+        services.AddScoped<RoleSeeder>();
+        services.AddScoped<PermissionSeeder>();
+        services.AddScoped<StructuralSeeder>();
+        services.AddScoped<RolePermissionSeeder>();
         services.AddScoped<DevelopmentSeeder>();
 
         return services;

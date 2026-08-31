@@ -6,23 +6,15 @@ using NewsflowApi.Domain.Identity.Users;
 
 namespace NewsflowApi.Application.Authentication
 {
-    public class AuthService
-    {
-        private readonly UserManager<User> _userManager;
-        private readonly SignInManager<User> _signInManager;
-        private readonly NewsflowDbContext _context;
-
-
-        public AuthService(
-            UserManager<User> userManager,
-            SignInManager<User> signInManager,
-            NewsflowDbContext context
+    public class AuthService(
+        UserManager<User> userManager,
+        SignInManager<User> signInManager,
+        NewsflowDbContext context
             )
-        {
-            _userManager = userManager;
-            _signInManager = signInManager;
-            _context = context;
-        }
+    {
+        private readonly UserManager<User> _userManager = userManager;
+        private readonly SignInManager<User> _signInManager = signInManager;
+        private readonly NewsflowDbContext _context = context;
 
         public async Task<ApplicationResult> CreateUserForStaffAsync(Guid staffId, string email)
         {

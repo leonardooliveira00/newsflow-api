@@ -1,4 +1,5 @@
 ﻿using NewsflowApi.Application.Authentication;
+using NewsflowApi.Application.Authorization;
 
 namespace NewsflowApi.Extensions.DependencyInjection
 {
@@ -9,6 +10,8 @@ namespace NewsflowApi.Extensions.DependencyInjection
             services.AddScoped<AuthService>();
 
             services.AddScoped<InvitationService>();
+
+            services.AddScoped<RoleAssignmentService>();
 
             return services;
         }

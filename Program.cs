@@ -17,7 +17,7 @@ builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
-await app.DevelopmentSeedDataAsync();
+await app.SeedDataAsync();
 
 if (app.Environment.IsDevelopment())
 {

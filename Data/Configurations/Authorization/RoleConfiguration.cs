@@ -12,10 +12,10 @@ namespace NewsflowApi.Data.Configurations.Authorization
 
             builder.HasKey(role => role.Id);
 
-            builder.Property(role => role.RoleName).HasMaxLength(50).IsRequired();
-            builder.HasIndex(role => role.RoleName).IsUnique();
+            builder.Property(role => role.Name).HasMaxLength(50).IsRequired();
+            builder.HasIndex(role => role.Name).IsUnique();
 
-            builder.Property(role => role.RoleDescription).HasMaxLength(255);
+            builder.Property(role => role.Description).HasMaxLength(255);
 
             builder.Property(role => role.CreatedAt);
 
