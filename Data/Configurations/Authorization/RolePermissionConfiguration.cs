@@ -17,13 +17,9 @@ namespace NewsflowApi.Data.Configurations.Authorization
                 rolePermission.PermissionId
             });
 
-            builder.Property(rolePermission => rolePermission.RoleId);
+            builder.HasOne(rolePermission => rolePermission.Role).WithMany(role => role.RolePermissions).HasForeignKey(rolePermission => rolePermission.RoleId);
 
-            builder.Property(rolePermission => rolePermission.PermissionId);
-
-            builder.HasOne(rolePermission => rolePermission.Role).WithMany().HasForeignKey(rolePermission => rolePermission.RoleId);
-
-            builder.HasOne(rolePermission => rolePermission.Permission).WithMany().HasForeignKey(rolePermission => rolePermission.PermissionId);
+            builder.HasOne(rolePermission => rolePermission.Permission).WithMany(permission => permission.RolePermissions).HasForeignKey(rolePermission => rolePermission.PermissionId);
         }
     }
 }

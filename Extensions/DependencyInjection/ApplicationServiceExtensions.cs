@@ -13,6 +13,8 @@ namespace NewsflowApi.Extensions.DependencyInjection
 
             services.AddScoped<RoleAssignmentService>();
 
+            services.AddScoped<AuthorizationService>();
+
             return services;
         }
     }

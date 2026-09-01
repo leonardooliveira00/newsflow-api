@@ -5,6 +5,7 @@ using NewsflowApi.Application.Authentication;
 using NewsflowApi.Application.Common;
 using NewsflowApi.Contracts.Authentication;
 using NewsflowApi.Extensions.Http;
+using System.Security.Claims;
 
 namespace NewsflowApi.Controllers.Authentication
 {
@@ -53,7 +54,18 @@ namespace NewsflowApi.Controllers.Authentication
             return Ok(new
             {
                 authenticated = User.Identity?.IsAuthenticated,
-                name = User.Identity?.Name
+                name = User.Identity?.Name,
+
+                roles = User.Claims.Where(claim
+                => claim.Type == ClaimTypes.Role)
+                .Select(claim => claim.Value)
+                .ToList(),
+
+                permissions = User.Claims.Where(claim
+                => claim.Type == "Permission")
+                .Select(claim => claim.Value)
+                .ToList()
+
             });
         }
     }

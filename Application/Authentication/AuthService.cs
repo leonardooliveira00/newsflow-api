@@ -1,20 +1,24 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using NewsflowApi.Application.Authorization;
 using NewsflowApi.Application.Common;
 using NewsflowApi.Data;
 using NewsflowApi.Domain.Identity.Users;
+using System.Security.Claims;
 
 namespace NewsflowApi.Application.Authentication
 {
     public class AuthService(
         UserManager<User> userManager,
         SignInManager<User> signInManager,
-        NewsflowDbContext context
+        NewsflowDbContext context,
+        AuthorizationService authotizationService
             )
     {
         private readonly UserManager<User> _userManager = userManager;
         private readonly SignInManager<User> _signInManager = signInManager;
         private readonly NewsflowDbContext _context = context;
+        private readonly AuthorizationService _authorizationService = authotizationService;
 
         public async Task<ApplicationResult> CreateUserForStaffAsync(Guid staffId, string email)
         {
@@ -94,10 +98,9 @@ namespace NewsflowApi.Application.Authentication
                 ApplicationErrorType.Forbidden
                 );
 
-            var signInResult = await _signInManager.PasswordSignInAsync(
+            var signInResult = await _signInManager.CheckPasswordSignInAsync(
                 user,
                 password,
-                isPersistent: false,
                 lockoutOnFailure: true
                 );
 
@@ -136,6 +139,26 @@ namespace NewsflowApi.Application.Authentication
                     ApplicationErrorType.Unauthorized
                 );
             }
+
+            var authorizationResult = await _authorizationService.SetUserAuthorizationAsync(user.Id);
+
+            if (!authorizationResult.Succeeded) return authorizationResult;
+
+            var authorization = authorizationResult.Data!;
+
+            var claims = new List<Claim>();
+
+            claims.AddRange(authorization.Roles.Select(role
+                => new Claim(ClaimTypes.Role, role)));
+
+            claims.AddRange(authorization.Permissions.Select(permission
+                => new Claim("Permission", permission)));
+
+            await _signInManager.SignInWithClaimsAsync(
+                user,
+                isPersistent: false,
+                claims
+                );
 
             return ApplicationResult.Success();
         }
