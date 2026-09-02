@@ -16,6 +16,14 @@ namespace NewsflowApi.Data.Seeds
         {
             var permissions = new[]
         {
+
+            new Permission
+            {
+                Id = Guid.NewGuid(),
+                Name = "STAFF_CREATE",
+                Description = "Create staff members."
+            },
+
             new Permission
             {
                 Id = Guid.NewGuid(),

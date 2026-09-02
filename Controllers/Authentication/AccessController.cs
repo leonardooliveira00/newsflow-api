@@ -8,14 +8,9 @@ namespace NewsflowApi.Controllers.Authentication
 {
     [Route("api/access")]
     [ApiController]
-    public class AccessController : ControllerBase
+    public class AccessController(AuthService authService) : ControllerBase
     {
-        private readonly AuthService _authService;
-
-        public AccessController(AuthService authService)
-        {
-            _authService = authService;
-        }
+        private readonly AuthService _authService = authService;
 
         [HttpPost]
         public async Task<IActionResult> CreateAccess([FromBody] CreateUserForStaffRequest request)

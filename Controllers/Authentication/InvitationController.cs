@@ -8,14 +8,9 @@ namespace NewsflowApi.Controllers.Authentication
 {
     [Route("api/invitations")]
     [ApiController]
-    public class InvitationController : ControllerBase
+    public class InvitationController(InvitationService invitationService) : ControllerBase
     {
-        private readonly InvitationService _invitationService;
-
-        public InvitationController(InvitationService invitationService)
-        {
-            _invitationService = invitationService;
-        }
+        private readonly InvitationService _invitationService = invitationService;
 
         [HttpPost("{userId:guid}")]
         public async Task<IActionResult> GenerateInvitation(Guid userId)

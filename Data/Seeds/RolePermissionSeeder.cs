@@ -27,6 +27,7 @@ namespace NewsflowApi.Data.Seeds
                     ],
 
                 ["EDITOR_IN_CHIEF"] = [
+                    "STAFF_CREATE",
                     "ARTICLE_CREATE",
                     "ARTICLE_EDIT_OWN",
                     "ARTICLE_EDIT_ANY",

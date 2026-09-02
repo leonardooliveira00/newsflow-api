@@ -11,6 +11,12 @@ namespace NewsflowApi.Domain.Identity.Staffs
 
         public required string LastName { get; set; }
 
+        public required string Email { get; set; }
+
+        public required string ContactPhone { get; set; }
+
+        public string? Bio { get; set; }
+
         public User? User { get; set; }
     }
 }

@@ -16,9 +16,12 @@ namespace NewsflowApi.Data.Configurations.Identity
 
             builder.Property(staff => staff.LastName).HasMaxLength(50).IsRequired();
 
-            builder.Property(staff => staff.CreatedAt);
+            builder.Property(staff => staff.Email).HasMaxLength(255).IsRequired();
+            builder.HasIndex(staff => staff.Email).IsUnique();
 
-            builder.Property(staff => staff.UpdatedAt);
+            builder.Property(staff => staff.ContactPhone).HasMaxLength(20).IsRequired();
+
+            builder.Property(staff => staff.Bio).HasMaxLength(1000);
         }
     }
 }

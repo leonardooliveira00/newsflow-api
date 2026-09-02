@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NewsflowApi.Application.Authorization;
 using NewsflowApi.Contracts.Authorization;
@@ -12,6 +13,7 @@ namespace NewsflowApi.Controllers.Users
     {
         private readonly RoleAssignmentService _roleAssignmentService = roleAssignmentService;
 
+        [Authorize(Policy = "ROLE_MANAGE")]
         [HttpPost("{userId:guid}/roles")]
         public async Task<IActionResult> AssignRole(Guid userId, [FromBody] AssignRoleRequest request)
         {

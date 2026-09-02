@@ -59,7 +59,9 @@ public static class IdentityServiceExtensions
             })
             .AddIdentityCookies();
 
-        services.AddAuthorization();
+        services.AddAuthorizationBuilder()
+            .AddPolicy("ROLE_MANAGE", policy => policy.RequireClaim("Permission", "ROLE_MANAGE"))
+            .AddPolicy("STAFF_CREATE", policy => policy.RequireClaim("Permission", "STAFF_CREATE"));
 
         services.ConfigureApplicationCookie(options =>
         {
