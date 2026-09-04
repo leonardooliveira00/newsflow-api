@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using NewsflowApi.Domain.Authorization;
+using NewsflowApi.Domain.Entities.Authorization;
 
 namespace NewsflowApi.Data.Seeds
 {

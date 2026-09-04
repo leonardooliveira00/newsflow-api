@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-
-using NewsflowApi.Domain.Authorization;
+using NewsflowApi.Domain.Entities.Authorization;
 
 namespace NewsflowApi.Data.Configurations.Authorization
 {

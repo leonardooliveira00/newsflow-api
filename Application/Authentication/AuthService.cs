@@ -3,7 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using NewsflowApi.Application.Authorization;
 using NewsflowApi.Application.Common;
 using NewsflowApi.Data;
-using NewsflowApi.Domain.Identity.Users;
+using NewsflowApi.Domain.Entities.Identity.Users;
+using NewsflowApi.Domain.Enums.Identity.Users;
 using System.Security.Claims;
 
 namespace NewsflowApi.Application.Authentication
@@ -152,7 +153,7 @@ namespace NewsflowApi.Application.Authentication
                 => new Claim(ClaimTypes.Role, role)));
 
             claims.AddRange(authorization.Permissions.Select(permission
-                => new Claim("Permission", permission)));
+                => new Claim(AuthorizationClaimTypes.Permission, permission)));
 
             await _signInManager.SignInWithClaimsAsync(
                 user,

@@ -3,10 +3,11 @@ using Microsoft.EntityFrameworkCore;
 namespace NewsflowApi.Data;
 
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using NewsflowApi.Domain.Authorization;
 using NewsflowApi.Domain.Common;
-using NewsflowApi.Domain.Identity.Staffs;
-using NewsflowApi.Domain.Identity.Users;
+using NewsflowApi.Domain.Entities.Authorization;
+using NewsflowApi.Domain.Entities.Identity.Users;
+using NewsflowApi.Domain.Entities.Staffs;
+
 public class NewsflowDbContext : IdentityUserContext<User, Guid>
 {
     public NewsflowDbContext(DbContextOptions<NewsflowDbContext> options) : base(options)

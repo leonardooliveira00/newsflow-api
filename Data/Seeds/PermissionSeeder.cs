@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using NewsflowApi.Domain.Authorization;
+using NewsflowApi.Domain.Constants.Authorization;
+using NewsflowApi.Domain.Entities.Authorization;
 
 namespace NewsflowApi.Data.Seeds
 {
@@ -20,92 +21,92 @@ namespace NewsflowApi.Data.Seeds
             new Permission
             {
                 Id = Guid.NewGuid(),
-                Name = "STAFF_CREATE",
+                Name = PermissionConstants.CreateStaff,
                 Description = "Create staff members."
             },
 
             new Permission
             {
                 Id = Guid.NewGuid(),
-                Name = "USER_CREATE",
+                Name = PermissionConstants.CreateUser,
                 Description = "Create CMS users."
             },
             new Permission
             {
                 Id = Guid.NewGuid(),
-                Name = "USER_UPDATE",
+                Name = PermissionConstants.UpdateUser,
                 Description = "Update CMS users."
             },
             new Permission
             {
                 Id = Guid.NewGuid(),
-                Name = "USER_SUSPEND",
+                Name = PermissionConstants.SuspendUser,
                 Description = "Suspend CMS users."
             },
             new Permission
             {
                 Id = Guid.NewGuid(),
-                Name = "ARTICLE_CREATE",
+                Name = PermissionConstants.CreateArticle,
                 Description = "Create articles."
             },
             new Permission
             {
                 Id = Guid.NewGuid(),
-                Name = "ARTICLE_EDIT_OWN",
+                Name = PermissionConstants.EditOwnArticle,
                 Description = "Edit own articles."
             },
             new Permission
             {
                 Id = Guid.NewGuid(),
-                Name = "ARTICLE_EDIT_ANY",
+                Name = PermissionConstants.EditAnyArticle,
                 Description = "Edit any article."
             },
             new Permission
             {
                 Id = Guid.NewGuid(),
-                Name = "ARTICLE_SUBMIT",
+                Name = PermissionConstants.SubmitArticle,
                 Description = "Submit articles for review."
             },
             new Permission
             {
                 Id = Guid.NewGuid(),
-                Name = "ARTICLE_REVIEW",
+                Name = PermissionConstants.ReviewArticle,
                 Description = "Review submitted articles."
             },
             new Permission
             {
                 Id = Guid.NewGuid(),
-                Name = "ARTICLE_REQUEST_CHANGES",
+                Name = PermissionConstants.RequestArticleChanges,
                 Description = "Request changes to articles."
             },
             new Permission
             {
                 Id = Guid.NewGuid(),
-                Name = "ARTICLE_APPROVE",
+                Name = PermissionConstants.ApproveArticle,
                 Description = "Approve articles."
             },
             new Permission
             {
                 Id = Guid.NewGuid(),
-                Name = "ARTICLE_PUBLISH",
+                Name = PermissionConstants.PublishArticle,
                 Description = "Publish articles."
             },
             new Permission
             {
                 Id = Guid.NewGuid(),
-                Name = "MEDIA_UPLOAD",
+                Name = PermissionConstants.UploadMedia,
                 Description = "Upload media assets."
             },
             new Permission
             {
                 Id = Guid.NewGuid(),
-                Name = "ANALYTICS_VIEW",
+                Name = PermissionConstants.ViewAnalytics,
                 Description = "View analytics."
             },
             new Permission
             {
                 Id = Guid.NewGuid(),
-                Name = "ROLE_MANAGE",
+                Name = PermissionConstants.ManageRole,
                 Description = "Manage roles and permissions."
             }
         };

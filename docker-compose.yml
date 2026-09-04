@@ -15,6 +15,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
       DOTNET_USE_POLLING_FILE_WATCHER: true
       ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=newsflow;Username=newsflow;Password=newsflow
+      DevelopmentAdmin__Password: ${NEWSFLOW_DEV_ADMIN_PASSWORD}
 
     depends_on:
       postgres:

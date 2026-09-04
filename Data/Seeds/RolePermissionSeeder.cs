@@ -1,16 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using NewsflowApi.Domain.Authorization;
+using NewsflowApi.Domain.Constants.Authorization;
+using NewsflowApi.Domain.Entities.Authorization;
 
 namespace NewsflowApi.Data.Seeds
 {
-    public class RolePermissionSeeder
+    public class RolePermissionSeeder(NewsflowDbContext context)
     {
-        private readonly NewsflowDbContext _context;
-
-        public RolePermissionSeeder(NewsflowDbContext context)
-        {
-            _context = context;
-        }
+        private readonly NewsflowDbContext _context = context;
 
         public async Task SeedAsync()
         {
@@ -23,38 +19,38 @@ namespace NewsflowApi.Data.Seeds
                 ["ADMIN"] = [.. permissions.Keys],
 
                 ["MANAGER"] = [
-                    "ANALYTICS_VIEW"
+                    PermissionConstants.ViewAnalytics
                     ],
 
                 ["EDITOR_IN_CHIEF"] = [
-                    "STAFF_CREATE",
-                    "ARTICLE_CREATE",
-                    "ARTICLE_EDIT_OWN",
-                    "ARTICLE_EDIT_ANY",
-                    "ARTICLE_SUBMIT",
-                    "ARTICLE_REVIEW",
-                    "ARTICLE_REQUEST_CHANGES",
-                    "ARTICLE_APPROVE",
-                    "ARTICLE_PUBLISH",
-                    "MEDIA_UPLOAD",
-                    "ANALYTICS_VIEW"
+                    PermissionConstants.CreateStaff,
+                    PermissionConstants.CreateArticle,
+                    PermissionConstants.EditOwnArticle,
+                    PermissionConstants.EditAnyArticle,
+                    PermissionConstants.SubmitArticle,
+                    PermissionConstants.ReviewArticle,
+                    PermissionConstants.RequestArticleChanges,
+                    PermissionConstants.ApproveArticle,
+                    PermissionConstants.PublishArticle,
+                    PermissionConstants.UploadMedia,
+                    PermissionConstants.ViewAnalytics
                     ],
 
                 ["EDITOR"] = [
-                    "ARTICLE_EDIT_ANY",
-                    "ARTICLE_REVIEW",
-                    "ARTICLE_REQUEST_CHANGES",
-                    "ARTICLE_APPROVE"
+                    PermissionConstants.EditAnyArticle,
+                    PermissionConstants.ReviewArticle,
+                    PermissionConstants.RequestArticleChanges,
+                    PermissionConstants.ApproveArticle,
                     ],
 
                 ["REPORTER"] = [
-                    "ARTICLE_CREATE",
-                    "ARTICLE_EDIT_OWN",
-                    "ARTICLE_SUBMIT"
+                    PermissionConstants.CreateArticle,
+                    PermissionConstants.EditOwnArticle,
+                    PermissionConstants.SubmitArticle,
                     ],
 
                 ["PHOTOGRAPHER"] = [
-                    "MEDIA_UPLOAD"
+                    PermissionConstants.UploadMedia,
                     ]
             };
 
@@ -71,11 +67,11 @@ namespace NewsflowApi.Data.Seeds
 
             var missingRelations = new List<RolePermission>();
 
-            foreach (var (roleName, PermissionNames) in matrix)
+            foreach (var (roleName, permissionNames) in matrix)
             {
                 var roleId = roles[roleName];
 
-                foreach (var permissionName in PermissionNames)
+                foreach (var permissionName in permissionNames)
                 {
                     var permissionId = permissions[permissionName];
 

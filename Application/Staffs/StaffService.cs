@@ -1,8 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NewsflowApi.Application.Common;
-using NewsflowApi.Contracts.Staffs;
+using NewsflowApi.Application.Contracts.Requests.Staffs;
+using NewsflowApi.Application.Contracts.Responses.Staffs;
 using NewsflowApi.Data;
-using NewsflowApi.Domain.Identity.Staffs;
+using NewsflowApi.Domain.Entities.Staffs;
+using Npgsql;
 
 namespace NewsflowApi.Application.Staffs
 {
@@ -17,8 +19,8 @@ namespace NewsflowApi.Application.Staffs
             var staffExists = await _context.Staffs.AnyAsync(staff => staff.Email == normalizedEmail);
 
             if (staffExists) return ApplicationResult<Staff>.Failure(
-                "staff_already_exists",
-                "Staff already exists.",
+                "staff_email_already_exists",
+                "A staff member with this email already exists.",
                 ApplicationErrorType.Conflict
                 );
 
@@ -34,7 +36,21 @@ namespace NewsflowApi.Application.Staffs
 
             _context.Staffs.Add(staff);
 
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException ex) when (
+                ex.InnerException is PostgresException pgEx &&
+                pgEx.SqlState == PostgresErrorCodes.UniqueViolation &&
+                pgEx.ConstraintName == "IX_Staffs_Email")
+            {
+                return ApplicationResult<Staff>.Failure(
+                    "staff_email_already_exists",
+                    "A staff member with this email already exists.",
+                    ApplicationErrorType.Conflict
+                    );
+            }
 
             return ApplicationResult<Staff>.Success(staff);
         }

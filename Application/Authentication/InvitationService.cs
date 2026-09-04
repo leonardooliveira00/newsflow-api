@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using NewsflowApi.Application.Common;
 using NewsflowApi.Data;
-using NewsflowApi.Domain.Identity.Users;
+using NewsflowApi.Domain.Entities.Identity.Users;
+using NewsflowApi.Domain.Enums.Identity.Users;
 
 namespace NewsflowApi.Application.Authentication
 {

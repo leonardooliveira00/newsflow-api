@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using NewsflowApi.Domain.Identity.Staffs;
+using NewsflowApi.Domain.Entities.Staffs;
 
 namespace NewsflowApi.Data.Configurations.Identity
 {
