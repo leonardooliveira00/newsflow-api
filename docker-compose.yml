@@ -1,7 +1,9 @@
+name: newsflowapi
+
 services:
   api:
     build:
-      context: .
+      context: ./src/NewsflowApi
       dockerfile: dockerfile.dev
 
     container_name: newsflow-api
@@ -24,7 +26,7 @@ services:
         condition: service_healthy
 
     volumes:
-      - .:/app
+      - ./src/NewsflowApi:/app
       - dotnet_bin:/app/bin
       - dotnet_obj:/app/obj
       - data_protection_keys:/app/data-protection-keys
@@ -40,9 +42,9 @@ services:
       - '5432:5432'
 
     environment:
+      POSTGRES_DB: newsflow
       POSTGRES_USER: newsflow
       POSTGRES_PASSWORD: newsflow
-      POSTGRES_DB: newsflow
 
     volumes:
       - postgres_data:/var/lib/postgresql
@@ -52,6 +54,38 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+
+  postgres-test:
+    image: postgres:18
+
+    environment:
+      POSTGRES_DB: newsflow_test
+      POSTGRES_USER: newsflow
+      POSTGRES_PASSWORD: newsflow
+
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U newsflow -d newsflow_test']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  integration-tests:
+    image: mcr.microsoft.com/dotnet/sdk:10.0
+
+    working_dir: /workspace
+
+    volumes:
+      - .:/workspace
+
+    environment:
+      ASPNETCORE_ENVIRONMENT: Testing
+      ConnectionStrings__DefaultConnection: Host=postgres-test;Port=5432;Database=newsflow_test;Username=newsflow;Password=newsflow
+
+    depends_on:
+      postgres-test:
+        condition: service_healthy
+
+    command: dotnet test tests/NewsflowApi.IntegrationTests/NewsflowApi.IntegrationTests.csproj
 
   redis:
     image: redis:8-alpine

@@ -45,7 +45,8 @@ public static class IdentityServiceExtensions
             })
             .AddEntityFrameworkStores<NewsflowDbContext>()
             .AddSignInManager()
-            .AddDefaultTokenProviders();
+            .AddDefaultTokenProviders()
+            .AddClaimsPrincipalFactory<NewsflowUserClaimsPrincipalFactory>();
 
         services
             .AddAuthentication(options =>

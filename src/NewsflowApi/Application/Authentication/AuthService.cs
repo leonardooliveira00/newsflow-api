@@ -5,7 +5,6 @@ using NewsflowApi.Application.Common;
 using NewsflowApi.Data;
 using NewsflowApi.Domain.Entities.Identity.Users;
 using NewsflowApi.Domain.Enums.Identity.Users;
-using System.Security.Claims;
 
 namespace NewsflowApi.Application.Authentication
 {
@@ -141,24 +140,9 @@ namespace NewsflowApi.Application.Authentication
                 );
             }
 
-            var authorizationResult = await _authorizationService.SetUserAuthorizationAsync(user.Id);
-
-            if (!authorizationResult.Succeeded) return authorizationResult;
-
-            var authorization = authorizationResult.Data!;
-
-            var claims = new List<Claim>();
-
-            claims.AddRange(authorization.Roles.Select(role
-                => new Claim(ClaimTypes.Role, role)));
-
-            claims.AddRange(authorization.Permissions.Select(permission
-                => new Claim(AuthorizationClaimTypes.Permission, permission)));
-
-            await _signInManager.SignInWithClaimsAsync(
+            await _signInManager.SignInAsync(
                 user,
-                isPersistent: false,
-                claims
+                isPersistent: false
                 );
 
             return ApplicationResult.Success();

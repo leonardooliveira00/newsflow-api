@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".env" />
+    <File Path=".gitignore" />
+    <File Path="docker-compose.yml" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/NewsflowApi/NewsflowApi.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/NewsflowApi.IntegrationTests/NewsflowApi.IntegrationTests.csproj" />
+  </Folder>
+</Solution>
