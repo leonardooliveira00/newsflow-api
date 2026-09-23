@@ -20,12 +20,7 @@ namespace NewsflowApi.Presentation.Controllers.Authentication
 
             if (!result.Succeeded) return result.ToErrorResult();
 
-            var response = new GenerateInvitationResponse
-            {
-                Token = result.Data!
-            };
-
-            return StatusCode(StatusCodes.Status200OK, response);
+            return Ok();
         }
 
         [HttpPost("accept")]
@@ -39,7 +34,7 @@ namespace NewsflowApi.Presentation.Controllers.Authentication
 
             if (!result.Succeeded) return result.ToErrorResult();
 
-            return StatusCode(StatusCodes.Status200OK);
+            return Ok();
         }
     }
 }

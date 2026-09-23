@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NewsflowApi.Application.Common;
-using NewsflowApi.Data;
+using NewsflowApi.Infrastructure.Persistence;
 
 namespace NewsflowApi.Application.Authorization
 {

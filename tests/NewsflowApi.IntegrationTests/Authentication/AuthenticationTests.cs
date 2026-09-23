@@ -4,7 +4,6 @@ using Microsoft.Extensions.DependencyInjection;
 using NewsflowApi.Application.Contracts.Requests.Authentication;
 using NewsflowApi.Application.Contracts.Requests.Staffs;
 using NewsflowApi.Application.Staffs;
-using NewsflowApi.Data;
 using NewsflowApi.Domain.Enums;
 using NewsflowApi.Domain.Entities.Identity.Users;
 using NewsflowApi.Domain.Entities.Staffs;
@@ -13,6 +12,7 @@ using System.Net;
 using System.Net.Http.Json;
 using NewsflowApi.Domain.Enums.Identity.Users;
 using NewsflowApi.Application.Contracts.Responses.Authentication;
+using NewsflowApi.Infrastructure.Persistence;
 
 namespace NewsflowApi.IntegrationTests.Authentication
 {

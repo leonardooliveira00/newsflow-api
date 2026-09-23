@@ -1,16 +1,16 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
-
-using NewsflowApi.Data;
-using NewsflowApi.Configuration.DependencyInjection;
-using NewsflowApi.Configuration.Hosting;
+using NewsflowApi.Infrastructure.Hosting;
+using NewsflowApi.Infrastructure.DependencyInjection;
+using NewsflowApi.Infrastructure.Identity;
+using NewsflowApi.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddNewsflowDatabase(builder.Configuration);
 builder.Services.AddNewsflowDataProtection();
 builder.Services.AddNewsflowIdentity(builder.Configuration);
-builder.Services.AddNewsflowApplication();
+builder.Services.AddNewsflowApplication(builder.Configuration);
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();

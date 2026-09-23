@@ -3,11 +3,13 @@
     public class PermissionConstants
     {
         public const string CreateStaff = "CREATE_STAFF";
+        public const string ViewStaff = "VIEW_STAFF";
+        public const string UpdateStaff = "UPDATE_STAFF";
+        public const string DeactivateStaff = "DEACTIVATE_STAFF";
 
         public const string CreateUser = "CREATE_USER";
         public const string UpdateUser = "UPDATE_USER";
         public const string SuspendUser = "SUSPEND_USER";
-
         public const string ManageRole = "MANAGE_ROLE";
 
         public const string CreateArticle = "CREATE_ARTICLE";
