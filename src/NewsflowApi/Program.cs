@@ -4,6 +4,7 @@ using NewsflowApi.Infrastructure.Hosting;
 using NewsflowApi.Infrastructure.DependencyInjection;
 using NewsflowApi.Infrastructure.Identity;
 using NewsflowApi.Infrastructure.Persistence;
+using NewsflowApi.Presentation.ExceptionHandling;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,8 @@ builder.Services.AddNewsflowDatabase(builder.Configuration);
 builder.Services.AddNewsflowDataProtection();
 builder.Services.AddNewsflowIdentity(builder.Configuration);
 builder.Services.AddNewsflowApplication(builder.Configuration);
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
@@ -28,6 +31,8 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
+
+app.UseExceptionHandler();
 
 app.UseHttpsRedirection();
 

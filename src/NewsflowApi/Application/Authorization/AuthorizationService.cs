@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using NewsflowApi.Application.Common;
+using NewsflowApi.Application.Common.Application;
+using NewsflowApi.Application.Common.Errors;
 using NewsflowApi.Infrastructure.Persistence;
 
 namespace NewsflowApi.Application.Authorization
@@ -12,11 +13,7 @@ namespace NewsflowApi.Application.Authorization
         {
             var userExists = await _context.Users.AnyAsync(user => user.Id == userId);
 
-            if (!userExists) return ApplicationResult<UserAuthorizationContext>.Failure(
-                "user_not_found",
-                "User not found",
-                ApplicationErrorType.NotFound
-                );
+            if (!userExists) return ApplicationResult<UserAuthorizationContext>.Failure(UserErrors.NotFound);
 
             var userRoles = await _context.UserRoles
                 .AsNoTracking()

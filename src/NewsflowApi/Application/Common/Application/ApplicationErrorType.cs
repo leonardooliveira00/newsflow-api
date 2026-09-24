@@ -1,4 +1,4 @@
-﻿namespace NewsflowApi.Application.Common
+﻿namespace NewsflowApi.Application.Common.Application
 {
     public enum ApplicationErrorType
     {
@@ -8,6 +8,5 @@
         Unauthorized,
         Forbidden,
         Locked,
-        Internal
     }
 }

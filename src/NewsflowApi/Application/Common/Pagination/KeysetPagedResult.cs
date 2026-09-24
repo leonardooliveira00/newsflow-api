@@ -1,4 +1,4 @@
-﻿namespace NewsflowApi.Application.Common
+﻿namespace NewsflowApi.Application.Common.Pagination
 {
     public sealed class KeysetPagedResult<T>
     {

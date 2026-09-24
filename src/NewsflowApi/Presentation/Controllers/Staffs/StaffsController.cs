@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using NewsflowApi.Application.Common;
+using NewsflowApi.Application.Common.Pagination;
 using NewsflowApi.Application.Contracts.Requests.Staffs;
 using NewsflowApi.Application.Contracts.Responses.Staffs;
 using NewsflowApi.Application.Staffs;

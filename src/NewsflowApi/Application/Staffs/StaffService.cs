@@ -2,6 +2,9 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using NewsflowApi.Application.Common;
+using NewsflowApi.Application.Common.Application;
+using NewsflowApi.Application.Common.Errors;
+using NewsflowApi.Application.Common.Pagination;
 using NewsflowApi.Application.Contracts.Requests.Staffs;
 using NewsflowApi.Application.Contracts.Responses.Staffs;
 using NewsflowApi.Domain.Entities.Identity.Users;
@@ -17,11 +20,9 @@ namespace NewsflowApi.Application.Staffs
 {
     public class StaffService(
         NewsflowDbContext newsflowDbContext,
-        ILogger<StaffService> logger,
         UserManager<User> userManager)
     {
         private readonly NewsflowDbContext _context = newsflowDbContext;
-        private readonly ILogger<StaffService> _logger = logger;
         private readonly UserManager<User> _userManager = userManager;
 
         public async Task<ApplicationResult<Staff>> RegisterStaffAsync(RegisterStaffRequest request)
@@ -30,11 +31,7 @@ namespace NewsflowApi.Application.Staffs
 
             var staffExists = await _context.Staffs.AnyAsync(staff => staff.Email == normalizedEmail);
 
-            if (staffExists) return ApplicationResult<Staff>.Failure(
-                "staff_email_already_exists",
-                "A staff member with this email already exists.",
-                ApplicationErrorType.Conflict
-                );
+            if (staffExists) return ApplicationResult<Staff>.Failure(StaffErrors.StaffAlreadyExists);
 
             var staff = new Staff
             {
@@ -58,11 +55,7 @@ namespace NewsflowApi.Application.Staffs
                     pgEx.SqlState == PostgresErrorCodes.UniqueViolation &&
                     pgEx.ConstraintName == "IX_Staffs_Email")
             {
-                return ApplicationResult<Staff>.Failure(
-                    "staff_email_already_exists",
-                    "A staff member with this email already exists.",
-                    ApplicationErrorType.Conflict
-                    );
+                return ApplicationResult<Staff>.Failure(StaffErrors.EmailAlreadyInUse);
             }
 
             return ApplicationResult<Staff>.Success(staff);
@@ -73,11 +66,7 @@ namespace NewsflowApi.Application.Staffs
             StaffKeysetCursor? currentCursor,
             int pageSize = 20)
         {
-            if (pageSize <= 0 || pageSize > 100) return ApplicationResult<KeysetPagedResult<StaffListItem>>.Failure(
-                "invalid_page_size",
-                "Invalid page size",
-                ApplicationErrorType.Validation
-             );
+            if (pageSize <= 0 || pageSize > 100) return ApplicationResult<KeysetPagedResult<StaffListItem>>.Failure(KeysetPaginationErrors.InvalidPageSize);
 
             var query = _context.Staffs
                 .AsNoTracking()
@@ -139,51 +128,22 @@ namespace NewsflowApi.Application.Staffs
 
         public async Task<ApplicationResult<Staff>> FindStaffByIdAsync(Guid staffId)
         {
-            try
-            {
-                var staff = await _context.Staffs
-                    .AsNoTracking()
-                    .FirstOrDefaultAsync(staff => staff.Id == staffId);
+            var staff = await _context.Staffs
+                .AsNoTracking()
+                .FirstOrDefaultAsync(staff => staff.Id == staffId);
 
-                if (staff is null) return ApplicationResult<Staff>.Failure(
-                    "staff_not_found",
-                    "Staff not found",
-                    ApplicationErrorType.NotFound
-                    );
+            if (staff is null) return ApplicationResult<Staff>.Failure(StaffErrors.NotFound);
 
-                return ApplicationResult<Staff>.Success(staff);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(
-                    ex,
-                    "Failed to retrieve staff {StaffId}",
-                    staffId
-                    );
-
-                return ApplicationResult<Staff>.Failure(
-                    "internal_server_error",
-                    "Internal server error",
-                    ApplicationErrorType.Internal
-                    );
-            }
+            return ApplicationResult<Staff>.Success(staff);
         }
 
         public async Task<ApplicationResult<Staff>> UpdateStaffAsync(UpdateStaffRequest request, Guid staffId)
         {
             var staff = await _context.Staffs.FirstOrDefaultAsync(staff => staff.Id == staffId);
 
-            if (staff is null) return ApplicationResult<Staff>.Failure(
-                "staff_not_found",
-                "Staff not found",
-                ApplicationErrorType.NotFound
-                );
+            if (staff is null) return ApplicationResult<Staff>.Failure(StaffErrors.NotFound);
 
-            if (staff.Status != StaffStatus.Active) return ApplicationResult<Staff>.Failure(
-                "staff_is_not_active",
-                "Staff is not active",
-                ApplicationErrorType.Conflict
-                );
+            if (staff.Status != StaffStatus.Active) return ApplicationResult<Staff>.Failure(StaffErrors.NotActive);
 
             UpdateHelper.UpdateIfProvided(
                 request.FirstName,
@@ -211,16 +171,12 @@ namespace NewsflowApi.Application.Staffs
 
                 if (normalizedEmail != staff.Email)
                 {
-                    var emailAlreadyExists = await _context.Staffs
+                    var emailAlreadyInUse = await _context.Staffs
                     .AnyAsync(otherStaff => otherStaff.Id != staffId &&
                               otherStaff.Email == normalizedEmail
                     );
 
-                    if (emailAlreadyExists) return ApplicationResult<Staff>.Failure(
-                        "email_already_in_use",
-                        "Email already in use",
-                        ApplicationErrorType.Conflict
-                        );
+                    if (emailAlreadyInUse) return ApplicationResult<Staff>.Failure(StaffErrors.EmailAlreadyInUse);
 
                     staff.Email = normalizedEmail;
                 }
@@ -236,11 +192,7 @@ namespace NewsflowApi.Application.Staffs
                     postgresException.ConstraintName == "IX_Staffs_Email"
                 )
             {
-                return ApplicationResult<Staff>.Failure(
-                    "email_already_in_use",
-                    "Email already in use.",
-                    ApplicationErrorType.Conflict
-                    );
+                return ApplicationResult<Staff>.Failure(StaffErrors.EmailAlreadyInUse);
             }
 
             return ApplicationResult<Staff>.Success(staff);
@@ -252,70 +204,31 @@ namespace NewsflowApi.Application.Staffs
                 .Include(staff => staff.User)
                 .FirstOrDefaultAsync(staff => staff.Id == staffId);
 
-            if (staff is null) return ApplicationResult.Failure(
-                "staff_not_found",
-                "staff not found.",
-                ApplicationErrorType.NotFound
-                );
+            if (staff is null) return ApplicationResult.Failure(StaffErrors.NotFound);
 
-            if (staff.Status != StaffStatus.Active) return ApplicationResult.Failure(
-                "staff_is_not_active",
-                "Staff is not active",
-                ApplicationErrorType.Conflict
-                );
+            if (staff.Status != StaffStatus.Active) return ApplicationResult.Failure(StaffErrors.NotActive);
 
             await using var transaction = await _context.Database.BeginTransactionAsync();
 
-            try
-            {
-                staff.Status = StaffStatus.Inactive;
+            staff.Status = StaffStatus.Inactive;
 
-                if (staff.User is not null)
+            if (staff.User is not null)
+            {
+                staff.User.Status = UserStatus.Inactive;
+
+                var stampResult = await _userManager.UpdateSecurityStampAsync(staff.User);
+
+                if (!stampResult.Succeeded)
                 {
-                    staff.User.Status = UserStatus.Inactive;
-
-                    var stampResult = await _userManager.UpdateSecurityStampAsync(staff.User);
-
-                    if (!stampResult.Succeeded)
-                    {
-                        await transaction.RollbackAsync();
-
-                        _logger.LogError(
-                            "Failed to update security stamp while deactivating staff {StaffId}. Errors: {Errors}",
-                            staffId,
-                            string.Join(", ", stampResult.Errors.Select(error => error.Description))
-                            );
-
-                        return ApplicationResult.Failure(
-                            "failed_to_deactivate_user",
-                            "Failed to deactivate user.",
-                            ApplicationErrorType.Internal
-                            );
-                    }
+                    throw new InvalidOperationException();
                 }
-
-                await _context.SaveChangesAsync();
-
-                await transaction.CommitAsync();
-
-                return ApplicationResult.Success();
             }
-            catch (Exception ex)
-            {
-                await transaction.RollbackAsync();
 
-                _logger.LogError(
-                    ex,
-                    "Failed to deactivate staff {StaffId}.",
-                    staffId
-                    );
+            await _context.SaveChangesAsync();
 
-                return ApplicationResult.Failure(
-                    "internal_server_error",
-                    "Internal server error",
-                    ApplicationErrorType.Internal
-                    );
-            }
+            await transaction.CommitAsync();
+
+            return ApplicationResult.Success();
         }
 
     }

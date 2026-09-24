@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using NewsflowApi.Application.Common;
+using NewsflowApi.Application.Common.Application;
+using NewsflowApi.Application.Common.Errors;
 using NewsflowApi.Domain.Entities.Authorization;
 using NewsflowApi.Domain.Entities.Identity.Users;
 using NewsflowApi.Infrastructure.Persistence;
@@ -18,29 +19,17 @@ namespace NewsflowApi.Application.Authorization
         {
             var user = await _userManager.FindByIdAsync(userId.ToString());
 
-            if (user is null) return ApplicationResult.Failure(
-                "user_not_found",
-                "User not found.",
-                ApplicationErrorType.NotFound
-                );
+            if (user is null) return ApplicationResult.Failure(UserErrors.NotFound);
 
             var role = await _context.Roles.FirstOrDefaultAsync(role => role.Id == roleId);
 
-            if (role is null) return ApplicationResult.Failure(
-                "role_not_found",
-                "Role not found.",
-                ApplicationErrorType.NotFound
-                );
+            if (role is null) return ApplicationResult.Failure(AuthorizationErrors.RoleNotFound);
 
             var alreadyHasRole = await _context.UserRoles.AnyAsync(userRole =>
                 userRole.UserId == userId &&
                 userRole.RoleId == role.Id);
 
-            if (alreadyHasRole) return ApplicationResult.Failure(
-                "user_already_has_role",
-                "User already has this role",
-                ApplicationErrorType.Conflict
-                );
+            if (alreadyHasRole) return ApplicationResult.Failure(AuthorizationErrors.RoleAlreadyAssignedToUser);
 
             var userRole = new UserRole
             {
@@ -53,35 +42,16 @@ namespace NewsflowApi.Application.Authorization
 
             await using var transaction = await _context.Database.BeginTransactionAsync();
 
-            try
+            await _context.SaveChangesAsync();
+
+            var updateSecurityStampResult = await _userManager.UpdateSecurityStampAsync(user);
+
+            if (!updateSecurityStampResult.Succeeded)
             {
-                await _context.SaveChangesAsync();
-
-                var updateSecurityStampResult = await _userManager.UpdateSecurityStampAsync(user);
-
-                if (!updateSecurityStampResult.Succeeded)
-                {
-                    await transaction.RollbackAsync();
-
-                    return ApplicationResult.Failure(
-                        "update_security_stamp_failed",
-                        "Failed to update the security stamp.",
-                        ApplicationErrorType.Internal
-                           );
-                }
-
-                await transaction.CommitAsync();
+                throw new InvalidOperationException();
             }
-            catch
-            {
-                await transaction.RollbackAsync();
 
-                return ApplicationResult.Failure(
-                    "role_assignment_failed",
-                    "Failed to assign the role.",
-                    ApplicationErrorType.Internal
-                    );
-            }
+            await transaction.CommitAsync();
 
             return ApplicationResult.Success();
         }
@@ -90,61 +60,30 @@ namespace NewsflowApi.Application.Authorization
         {
             var user = await _userManager.FindByIdAsync(userId.ToString());
 
-            if (user is null) return ApplicationResult.Failure(
-                "user_not_found",
-                "User not found.",
-                ApplicationErrorType.NotFound
-                );
+            if (user is null) return ApplicationResult.Failure(UserErrors.NotFound);
 
             var role = await _context.Roles.FirstOrDefaultAsync(role => role.Id == roleId);
 
-            if (role is null) return ApplicationResult.Failure(
-                "role_not_found",
-                "Role not found.",
-                ApplicationErrorType.NotFound
-                );
+            if (role is null) return ApplicationResult.Failure(AuthorizationErrors.RoleNotFound);
 
             var userRole = await _context.UserRoles.FirstOrDefaultAsync(userRole => userRole.UserId == user.Id && userRole.RoleId == role.Id);
 
-            if (userRole is null) return ApplicationResult.Failure(
-                "role_not_assigned_to_user",
-                "Role is not assigned to the user. ",
-                ApplicationErrorType.NotFound
-                );
+            if (userRole is null) return ApplicationResult.Failure(AuthorizationErrors.RoleNotAssignedToUser);
 
             _context.UserRoles.Remove(userRole);
 
             await using var transaction = await _context.Database.BeginTransactionAsync();
 
-            try
+            await _context.SaveChangesAsync();
+
+            var updateSecurityStampResult = await _userManager.UpdateSecurityStampAsync(user);
+
+            if (!updateSecurityStampResult.Succeeded)
             {
-                await _context.SaveChangesAsync();
-
-                var updateSecurityStampResult = await _userManager.UpdateSecurityStampAsync(user);
-
-                if (!updateSecurityStampResult.Succeeded)
-                {
-                    await transaction.RollbackAsync();
-
-                    return ApplicationResult.Failure(
-                        "update_security_stamp_failed",
-                        "Failed to update the security stamp.",
-                        ApplicationErrorType.Internal
-                           );
-                }
-
-                await transaction.CommitAsync();
+                throw new InvalidOperationException();
             }
-            catch
-            {
-                await transaction.RollbackAsync();
 
-                return ApplicationResult.Failure(
-                        "role_removal_failed",
-                        "Failed to remove the role.",
-                        ApplicationErrorType.Internal
-                        );
-            }
+            await transaction.CommitAsync();
 
             return ApplicationResult.Success();
         }

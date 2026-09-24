@@ -3,7 +3,8 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using NewsflowApi.Application.Authorization;
-using NewsflowApi.Application.Common;
+using NewsflowApi.Application.Common.Application;
+using NewsflowApi.Application.Common.Errors;
 using NewsflowApi.Domain.Entities.Identity.Users;
 using NewsflowApi.Domain.Enums.Identity.Users;
 using NewsflowApi.Infrastructure.Email;
@@ -33,34 +34,13 @@ namespace NewsflowApi.Application.Authentication
         {
             var staff = await _context.Staffs.Include(staff => staff.User).FirstOrDefaultAsync(staff => staff.Id == staffId);
 
-            if (staff is null)
-            {
-                return ApplicationResult.Failure(
-                    "staff_not_found",
-                    "Staff not found.",
-                    ApplicationErrorType.NotFound
-                    );
-            }
+            if (staff is null) return ApplicationResult.Failure(StaffErrors.NotFound);
 
-            if (staff.User is not null)
-            {
-                return ApplicationResult.Failure(
-                    "staff_already_has_user",
-                    "Staff already has a user.",
-                    ApplicationErrorType.Conflict
-                    );
-            }
+            if (staff.User is not null) return ApplicationResult.Failure(UserErrors.UserAlreadyExists);
 
-            var existingUser = await _userManager.FindByEmailAsync(email);
+            var existingEmail = await _userManager.FindByEmailAsync(email);
 
-            if (existingUser is not null)
-            {
-                return ApplicationResult.Failure(
-                    "email_already_in_use",
-                    "Email is already associated with another user.",
-                    ApplicationErrorType.Conflict
-                    );
-            }
+            if (existingEmail is not null) return ApplicationResult.Failure(UserErrors.EmailAlreadyInUse);
 
             var user = new User
             {
@@ -81,11 +61,13 @@ namespace NewsflowApi.Application.Authentication
                     identityResult.Errors.Select(error => error.Description)
                     );
 
-                return ApplicationResult.Failure(
-                    "user_creation_failed",
+                var error = new ApplicationError(
+                    UserErrors.UserCreationFailed.Code,
                     errorMessage,
-                    ApplicationErrorType.Validation
+                    UserErrors.UserCreationFailed.Type
                     );
+
+                return ApplicationResult.Failure(error);
             }
 
             return ApplicationResult.Success();
@@ -95,17 +77,9 @@ namespace NewsflowApi.Application.Authentication
         {
             var user = await _userManager.FindByEmailAsync(email);
 
-            if (user is null) return ApplicationResult.Failure(
-                "invalid_credentials",
-                "Invalid email or password.",
-                ApplicationErrorType.Unauthorized
-                );
+            if (user is null) return ApplicationResult.Failure(AuthErrors.InvalidCredentials);
 
-            if (user.Status != UserStatus.Active) return ApplicationResult.Failure(
-                "user_not_active",
-                "User account is not active.",
-                ApplicationErrorType.Forbidden
-                );
+            if (user.Status != UserStatus.Active) return ApplicationResult.Failure(AuthErrors.UserNotActive);
 
             var signInResult = await _signInManager.CheckPasswordSignInAsync(
                 user,
@@ -113,41 +87,11 @@ namespace NewsflowApi.Application.Authentication
                 lockoutOnFailure: true
                 );
 
-            if (signInResult.IsLockedOut)
-            {
-                return ApplicationResult.Failure(
-                    "user_locked_out",
-                    "User account is temporarily locked.",
-                    ApplicationErrorType.Locked
-                );
-            }
+            if (signInResult.IsLockedOut) return ApplicationResult.Failure(AuthErrors.UserLockedOut);
 
-            if (signInResult.IsNotAllowed)
-            {
-                return ApplicationResult.Failure(
-                    "signin_not_allowed",
-                    "Sign in is not allowed for this account.",
-                    ApplicationErrorType.Forbidden
-                );
-            }
+            if (signInResult.IsNotAllowed) return ApplicationResult.Failure(AuthErrors.SignInNotAllowed);
 
-            if (signInResult.RequiresTwoFactor)
-            {
-                return ApplicationResult.Failure(
-                    "two_factor_required",
-                    "Two-factor authentication is required.",
-                    ApplicationErrorType.Unauthorized
-                );
-            }
-
-            if (!signInResult.Succeeded)
-            {
-                return ApplicationResult.Failure(
-                    "invalid_credentials",
-                    "Invalid email or password.",
-                    ApplicationErrorType.Unauthorized
-                );
-            }
+            if (!signInResult.Succeeded) return ApplicationResult.Failure(AuthErrors.InvalidCredentials);
 
             await _signInManager.SignInAsync(
                 user,
@@ -168,45 +112,38 @@ namespace NewsflowApi.Application.Authentication
         {
             var user = await _userManager.FindByIdAsync(userId);
 
-            if (user is null) return ApplicationResult.Failure(
-                "user_not_found",
-                "User not found",
-                ApplicationErrorType.NotFound
-                );
+            if (user is null) return ApplicationResult.Failure(UserErrors.NotFound);
 
-            if (user.Status != UserStatus.Active) return ApplicationResult.Failure(
-                "user_not_active",
-                "User is not active",
-                ApplicationErrorType.Conflict
-                );
+            if (user.Status != UserStatus.Active) return ApplicationResult.Failure(AuthErrors.UserNotActive);
 
             var verifyPassword = await _userManager.CheckPasswordAsync(user, currentPassword);
 
-            if (!verifyPassword) return ApplicationResult.Failure(
-                "invalid_password",
-                "Invalid password",
-                ApplicationErrorType.Validation
-                );
+            if (!verifyPassword) return ApplicationResult.Failure(AuthErrors.InvalidCurrentPassword);
 
-            if (newPassword == currentPassword) return ApplicationResult.Failure(
-                "new_password_equals_old_password",
-                "New password equals old password",
-                ApplicationErrorType.Validation
-                );
+            if (newPassword == currentPassword) return ApplicationResult.Failure(AuthErrors.NewPasswordEqualsCurrentPassword);
 
             var changePasswordResult = await _userManager.ChangePasswordAsync(user, currentPassword, newPassword);
 
-            if (!changePasswordResult.Succeeded) return ApplicationResult.Failure(
-                "password_change_failed",
-                "Password change failed",
-                ApplicationErrorType.Validation
-                );
+            if (!changePasswordResult.Succeeded)
+            {
+                var errorMessage = string.Join(
+                    " ",
+                    changePasswordResult.Errors.Select(error => error.Description)
+                    );
+
+                var error = new ApplicationError(
+                    AuthErrors.PasswordChangeFailed.Code,
+                    errorMessage,
+                    AuthErrors.PasswordChangeFailed.Type
+                    );
+
+                return ApplicationResult.Failure(error);
+            }
 
             await _signInManager.RefreshSignInAsync(user);
 
             return ApplicationResult.Success();
         }
-
 
         public async Task<ApplicationResult> RequestPasswordResetAsync(string email)
         {
@@ -254,34 +191,32 @@ namespace NewsflowApi.Application.Authentication
                 out var passwordResetToken
                 ))
             {
-                return ApplicationResult.Failure(
-                    "invalid_reset_token",
-                    "Invalid reset token.",
-                    ApplicationErrorType.Validation
-                    );
+                return ApplicationResult.Failure(AuthErrors.InvalidResetToken);
             }
 
             var user = await _userManager.FindByEmailAsync(email);
 
-            if (user is null) return ApplicationResult.Failure(
-                "invalid_reset_token",
-                "Invalid reset token.",
-                ApplicationErrorType.Validation
-                );
+            if (user is null) return ApplicationResult.Failure(AuthErrors.InvalidResetToken);
 
-            if (user.Status != UserStatus.Active) return ApplicationResult.Failure(
-                "invalid_reset_token",
-                "Invalid reset token.",
-                ApplicationErrorType.Validation
-                );
+            if (user.Status != UserStatus.Active) return ApplicationResult.Failure(AuthErrors.InvalidResetToken);
 
             var passwordResetResult = await _userManager.ResetPasswordAsync(user, passwordResetToken, newPassword);
 
-            if (!passwordResetResult.Succeeded) return ApplicationResult.Failure(
-                "failed_to_reset_password",
-                "Failed to reset password.",
-                ApplicationErrorType.Validation
-                );
+            if (!passwordResetResult.Succeeded)
+            {
+                var errorMessage = string.Join(
+                    " ",
+                    passwordResetResult.Errors.Select(error => error.Description)
+                    );
+
+                var error = new ApplicationError(
+                    AuthErrors.PasswordResetFailed.Code,
+                    errorMessage,
+                    AuthErrors.PasswordResetFailed.Type
+                    );
+
+                return ApplicationResult.Failure(error);
+            }
 
             return ApplicationResult.Success();
         }

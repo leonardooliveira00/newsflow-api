@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using NewsflowApi.Application.Common;
+using NewsflowApi.Application.Common.Application;
 
 namespace NewsflowApi.Presentation.Extensions.Http
 {
@@ -21,9 +21,10 @@ namespace NewsflowApi.Presentation.Extensions.Http
                 ApplicationErrorType.NotFound => StatusCodes.Status404NotFound,
                 ApplicationErrorType.Conflict => StatusCodes.Status409Conflict,
                 ApplicationErrorType.Locked => StatusCodes.Status423Locked,
-                ApplicationErrorType.Internal => StatusCodes.Status500InternalServerError,
 
-                _ => StatusCodes.Status500InternalServerError
+                _ => throw new InvalidOperationException(
+                    $"Unsupported application error type: {result.ErrorType}"
+                    )
             };
 
             return new ObjectResult(body)

@@ -1,4 +1,4 @@
-﻿namespace NewsflowApi.Application.Common
+﻿namespace NewsflowApi.Application.Common.Application
 {
     public class ApplicationResult
     {
@@ -18,17 +18,14 @@
             };
         }
 
-        public static ApplicationResult Failure(
-            string errorCode,
-            string errorMessage,
-            ApplicationErrorType errorType)
+        public static ApplicationResult Failure(ApplicationError error)
         {
             return new ApplicationResult
             {
                 Succeeded = false,
-                ErrorCode = errorCode,
-                ErrorMessage = errorMessage,
-                ErrorType = errorType
+                ErrorCode = error.Code,
+                ErrorMessage = error.Message,
+                ErrorType = error.Type
             };
         }
     }
@@ -46,17 +43,14 @@
             };
         }
 
-        public new static ApplicationResult<T> Failure(
-            string errorCode,
-            string errorMessage,
-            ApplicationErrorType errorType)
+        public new static ApplicationResult<T> Failure(ApplicationError error)
         {
             return new ApplicationResult<T>
             {
                 Succeeded = false,
-                ErrorCode = errorCode,
-                ErrorMessage = errorMessage,
-                ErrorType = errorType
+                ErrorCode = error.Code,
+                ErrorMessage = error.Message,
+                ErrorType = error.Type
             };
         }
     }

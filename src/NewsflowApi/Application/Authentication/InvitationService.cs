@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
-using NewsflowApi.Application.Common;
+using NewsflowApi.Application.Common.Application;
+using NewsflowApi.Application.Common.Errors;
 using NewsflowApi.Domain.Entities.Identity.Users;
 using NewsflowApi.Domain.Enums.Identity.Users;
 using NewsflowApi.Infrastructure.Email;
@@ -29,17 +30,9 @@ namespace NewsflowApi.Application.Authentication
         {
             var user = await _userManager.FindByIdAsync(userId.ToString());
 
-            if (user is null) return ApplicationResult.Failure(
-                "user_not_found",
-                "User not found",
-                ApplicationErrorType.NotFound
-                );
+            if (user is null) return ApplicationResult.Failure(UserErrors.NotFound);
 
-            if (user.Status != UserStatus.Pending) return ApplicationResult.Failure(
-                "user_not_pending",
-                "User is not pending activation.",
-                ApplicationErrorType.Conflict
-                );
+            if (user.Status != UserStatus.Pending) return ApplicationResult.Failure(UserErrors.NotPendingActivation);
 
             var invitationToken = await _userManager.GenerateUserTokenAsync(
                 user,
@@ -75,21 +68,13 @@ namespace NewsflowApi.Application.Authentication
             return ApplicationResult.Success();
         }
 
-        public async Task<ApplicationResult<User>> ValidateInvitationTokenAsync(Guid userId, string invitationToken)
+        private async Task<ApplicationResult<User>> ValidateInvitationTokenAsync(Guid userId, string invitationToken)
         {
             var user = await _userManager.FindByIdAsync(userId.ToString());
 
-            if (user is null) return ApplicationResult<User>.Failure(
-                "user_not_found",
-                "User not found",
-                ApplicationErrorType.NotFound
-                );
+            if (user is null) return ApplicationResult<User>.Failure(UserErrors.NotFound);
 
-            if (user.Status != UserStatus.Pending) return ApplicationResult<User>.Failure(
-                "user_not_pending",
-                "User is not pending activation.",
-                ApplicationErrorType.Conflict
-                );
+            if (user.Status != UserStatus.Pending) return ApplicationResult<User>.Failure(UserErrors.NotPendingActivation);
 
             var isTokenValid = await _userManager.VerifyUserTokenAsync(
                 user,
@@ -98,11 +83,7 @@ namespace NewsflowApi.Application.Authentication
                 invitationToken
                 );
 
-            if (!isTokenValid) return ApplicationResult<User>.Failure(
-                "invalid_invitation_token",
-                "Invitation token invalid or expired.",
-                ApplicationErrorType.Validation
-                );
+            if (!isTokenValid) return ApplicationResult<User>.Failure(InvitationErrors.InvalidInvitationToken);
 
             return ApplicationResult<User>.Success(user);
         }
@@ -111,11 +92,7 @@ namespace NewsflowApi.Application.Authentication
         {
             if (!InvitationTokenCodec.TryDecode(encodedToken, out var invitationToken))
             {
-                return ApplicationResult.Failure(
-                    "invalid_invitation_token",
-                    "Invalid invitation token",
-                    ApplicationErrorType.Validation
-                    );
+                return ApplicationResult.Failure(InvitationErrors.InvalidInvitationToken);
             }
 
             var validationResult = await ValidateInvitationTokenAsync(userId, invitationToken);
@@ -137,11 +114,7 @@ namespace NewsflowApi.Application.Authentication
                     passwordResult.Errors.Select(error => error.Description)
                     );
 
-                return ApplicationResult.Failure(
-                    "password_creation_failed",
-                    errorMessage,
-                    ApplicationErrorType.Validation
-                    );
+                return ApplicationResult.Failure(AuthErrors.PasswordCreationFailed);
             }
 
             user.EmailConfirmed = true;
@@ -151,18 +124,7 @@ namespace NewsflowApi.Application.Authentication
 
             if (!updatedResult.Succeeded)
             {
-                await transaction.RollbackAsync();
-
-                var errorMessage = string.Join(
-                    " ",
-                    updatedResult.Errors.Select(error => error.Description)
-                    );
-
-                return ApplicationResult.Failure(
-                    "user_activation_failed",
-                    errorMessage,
-                    ApplicationErrorType.Internal
-                    );
+                throw new InvalidOperationException();
             }
 
             await transaction.CommitAsync();
