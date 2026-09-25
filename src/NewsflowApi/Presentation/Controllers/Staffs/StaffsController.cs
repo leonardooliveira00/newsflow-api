@@ -90,7 +90,7 @@ namespace NewsflowApi.Presentation.Controllers.Staffs
                 NextCursor = pagedResult.NextCursor
             };
 
-            return StatusCode(StatusCodes.Status200OK, response);
+            return Ok(response);
         }
 
         [Authorize(Policy = PermissionConstants.ViewStaff)]
@@ -114,7 +114,7 @@ namespace NewsflowApi.Presentation.Controllers.Staffs
                 Status = staff.Status
             };
 
-            return StatusCode(StatusCodes.Status200OK, response);
+            return Ok(response);
         }
 
         [Authorize(Policy = PermissionConstants.UpdateStaff)]
@@ -137,7 +137,7 @@ namespace NewsflowApi.Presentation.Controllers.Staffs
                 Bio = staff.Bio,
             };
 
-            return StatusCode(StatusCodes.Status200OK, response);
+            return Ok(response);
         }
 
         [Authorize(Policy = PermissionConstants.DeactivateStaff)]

@@ -9,7 +9,7 @@ namespace NewsflowApi.Presentation.Controllers.Authentication
 {
     [Route("api/invitations")]
     [ApiController]
-    public class InvitationController(InvitationService invitationService) : ControllerBase
+    public class InvitationsController(InvitationService invitationService) : ControllerBase
     {
         private readonly InvitationService _invitationService = invitationService;
 

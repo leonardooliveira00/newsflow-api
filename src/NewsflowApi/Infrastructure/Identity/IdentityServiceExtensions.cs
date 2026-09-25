@@ -48,6 +48,8 @@ public static class IdentityServiceExtensions
             .AddDefaultTokenProviders()
             .AddClaimsPrincipalFactory<NewsflowUserClaimsPrincipalFactory>();
 
+        services.AddSingleton<ILookupNormalizer, EmailNormalizerExtension>();
+
         services
             .AddAuthentication(options =>
             {

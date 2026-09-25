@@ -22,7 +22,7 @@ namespace NewsflowApi.Application.Authorization
                 .Include(userRole => userRole.Role)
                 .ThenInclude(role => role.RolePermissions)
                 .ThenInclude(rolePermission => rolePermission.Permission)
-                .AsNoTracking().ToListAsync();
+                .ToListAsync();
 
             var roles = userRoles
                 .Select(userRole

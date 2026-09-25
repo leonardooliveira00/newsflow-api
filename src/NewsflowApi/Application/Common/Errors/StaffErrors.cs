@@ -5,14 +5,14 @@ namespace NewsflowApi.Application.Common.Errors
     public static class StaffErrors
     {
         public static readonly ApplicationError NotFound = new(
-            "user_not_found",
-            "User not found.",
+            "staff_not_found",
+            "Staff not found.",
             ApplicationErrorType.NotFound
             );
 
         public static readonly ApplicationError NotActive = new(
-            "user_not_active",
-            "User not active.",
+            "staff_not_active",
+            "Staff is not active.",
             ApplicationErrorType.Conflict
             );
 

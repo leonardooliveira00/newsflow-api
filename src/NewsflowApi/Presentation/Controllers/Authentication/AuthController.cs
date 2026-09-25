@@ -20,6 +20,19 @@ namespace NewsflowApi.Presentation.Controllers.Authentication
         private readonly AuthService _authService = authService;
         private readonly UserManager<User> _userManager = userManager;
 
+        [HttpPost("create-user")]
+        public async Task<IActionResult> ProvideAccess([FromBody] CreateUserForStaffRequest request)
+        {
+            var result = await _authService.CreateUserForStaffAsync(request.StaffId, request.Email);
+
+            if (!result.Succeeded)
+            {
+                return result.ToErrorResult();
+            }
+
+            return Created();
+        }
+
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
@@ -30,7 +43,7 @@ namespace NewsflowApi.Presentation.Controllers.Authentication
                 return result.ToErrorResult();
             }
 
-            return StatusCode(StatusCodes.Status200OK);
+            return Ok();
         }
 
         [Authorize]
@@ -44,7 +57,7 @@ namespace NewsflowApi.Presentation.Controllers.Authentication
                 return result.ToErrorResult();
             }
 
-            return StatusCode(StatusCodes.Status204NoContent);
+            return NoContent();
         }
 
         [Authorize]
@@ -63,7 +76,7 @@ namespace NewsflowApi.Presentation.Controllers.Authentication
                 .Select(claim => claim.Value)]
             };
 
-            return StatusCode(StatusCodes.Status200OK, response);
+            return Ok(response);
         }
 
         [Authorize]
@@ -78,7 +91,7 @@ namespace NewsflowApi.Presentation.Controllers.Authentication
 
             if (!result.Succeeded) return result.ToErrorResult();
 
-            return StatusCode(StatusCodes.Status204NoContent);
+            return NoContent();
         }
 
 
@@ -90,7 +103,7 @@ namespace NewsflowApi.Presentation.Controllers.Authentication
 
             if (!result.Succeeded) return result.ToErrorResult();
 
-            return StatusCode(StatusCodes.Status200OK);
+            return Ok();
         }
 
         [AllowAnonymous]

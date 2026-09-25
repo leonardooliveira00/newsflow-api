@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using FluentValidation.AspNetCore;
+using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
 using NewsflowApi.Application.Authentication;
 using NewsflowApi.Application.Authorization;
 using NewsflowApi.Application.Staffs;

@@ -114,7 +114,13 @@ namespace NewsflowApi.Application.Authentication
                     passwordResult.Errors.Select(error => error.Description)
                     );
 
-                return ApplicationResult.Failure(AuthErrors.PasswordCreationFailed);
+                var error = new ApplicationError(
+                    AuthErrors.PasswordCreationFailed.Code,
+                    errorMessage,
+                    AuthErrors.PasswordCreationFailed.Type
+                    );
+
+                return ApplicationResult.Failure(error);
             }
 
             user.EmailConfirmed = true;

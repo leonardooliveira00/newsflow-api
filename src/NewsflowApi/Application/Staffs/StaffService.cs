@@ -26,9 +26,7 @@ namespace NewsflowApi.Application.Staffs
 
         public async Task<ApplicationResult<Staff>> RegisterStaffAsync(RegisterStaffRequest request)
         {
-            var normalizedEmail = request.Email.Trim().ToLowerInvariant();
-
-            var staffExists = await _context.Staffs.AnyAsync(staff => staff.Email == normalizedEmail);
+            var staffExists = await _context.Staffs.AnyAsync(staff => staff.Email == request.Email);
 
             if (staffExists) return ApplicationResult<Staff>.Failure(StaffErrors.StaffAlreadyExists);
 
@@ -37,7 +35,7 @@ namespace NewsflowApi.Application.Staffs
                 Id = Guid.NewGuid(),
                 FirstName = request.FirstName.Trim(),
                 LastName = request.LastName.Trim(),
-                Email = normalizedEmail,
+                Email = request.Email,
                 ContactPhone = request.ContactPhone.Trim(),
                 Bio = request.Bio?.Trim(),
             };
@@ -166,18 +164,17 @@ namespace NewsflowApi.Application.Staffs
 
             if (request.Email is not null)
             {
-                var normalizedEmail = request.Email.Trim().ToLowerInvariant();
 
-                if (normalizedEmail != staff.Email)
+                if (request.Email != staff.Email)
                 {
                     var emailAlreadyInUse = await _context.Staffs
                     .AnyAsync(otherStaff => otherStaff.Id != staffId &&
-                              otherStaff.Email == normalizedEmail
+                              otherStaff.Email == request.Email
                     );
 
                     if (emailAlreadyInUse) return ApplicationResult<Staff>.Failure(StaffErrors.EmailAlreadyInUse);
 
-                    staff.Email = normalizedEmail;
+                    staff.Email = request.Email;
                 }
             }
 

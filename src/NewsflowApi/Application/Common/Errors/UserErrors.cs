@@ -18,7 +18,7 @@ namespace NewsflowApi.Application.Common.Errors
 
         public static readonly ApplicationError NotActive = new(
             "user_not_active",
-            "User not active.",
+            "User is not active.",
             ApplicationErrorType.Conflict
             );
 
