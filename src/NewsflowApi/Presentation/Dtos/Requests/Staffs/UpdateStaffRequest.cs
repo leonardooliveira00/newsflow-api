@@ -1,4 +1,4 @@
-﻿namespace NewsflowApi.Application.Contracts.Requests.Staffs
+﻿namespace NewsflowApi.Presentation.Dtos.Requests.Staffs
 {
     public sealed record UpdateStaffRequest
     {

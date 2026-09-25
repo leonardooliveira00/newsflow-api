@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NewsflowApi.Application.Authentication;
-using NewsflowApi.Application.Contracts.Requests.Authentication;
+using NewsflowApi.Presentation.Dtos.Requests.Authentication;
 using NewsflowApi.Presentation.Extensions.Http;
 
 namespace NewsflowApi.Presentation.Controllers.Authentication

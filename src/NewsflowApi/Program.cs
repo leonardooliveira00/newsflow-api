@@ -5,6 +5,7 @@ using NewsflowApi.Infrastructure.DependencyInjection;
 using NewsflowApi.Infrastructure.Identity;
 using NewsflowApi.Infrastructure.Persistence;
 using NewsflowApi.Presentation.ExceptionHandling;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,7 +16,26 @@ builder.Services.AddNewsflowApplication(builder.Configuration);
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .ConfigureApiBehaviorOptions(options =>
+    {
+        options.InvalidModelStateResponseFactory = context =>
+        {
+            var problemDetails = new ValidationProblemDetails(context.ModelState)
+            {
+                Title = "One or more validation errors occurred.",
+                Status = StatusCodes.Status400BadRequest,
+                Detail = "See the errors property for details.",
+                Instance = context.HttpContext.Request.Path
+            };
+
+            return new BadRequestObjectResult(problemDetails)
+            {
+                ContentTypes = { "application/problem+json", "application/problem+xml" }
+            };
+        };
+    });
+
 builder.Services.AddOpenApi();
 
 if (builder.Environment.IsDevelopment())

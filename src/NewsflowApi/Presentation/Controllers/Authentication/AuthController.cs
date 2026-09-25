@@ -5,9 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 using NewsflowApi.Application.Authentication;
 using NewsflowApi.Application.Authorization;
 using NewsflowApi.Application.Common;
-using NewsflowApi.Application.Contracts.Requests.Authentication;
-using NewsflowApi.Application.Contracts.Responses.Authentication;
 using NewsflowApi.Domain.Entities.Identity.Users;
+using NewsflowApi.Presentation.Dtos.Requests.Authentication;
+using NewsflowApi.Presentation.Dtos.Responses.Authentication;
 using NewsflowApi.Presentation.Extensions.Http;
 using System.Security.Claims;
 

@@ -1,8 +1,6 @@
-﻿using NewsflowApi.Domain.Enums.Staffs;
-
-namespace NewsflowApi.Application.Contracts.Responses.Staffs
+﻿namespace NewsflowApi.Presentation.Dtos.Responses.Staffs
 {
-    public sealed record ViewStaffResponse
+    public sealed class UpdateStaffResponse
     {
         public Guid Id { get; init; }
         public string FirstName { get; init; } = null!;
@@ -10,6 +8,5 @@ namespace NewsflowApi.Application.Contracts.Responses.Staffs
         public string Email { get; init; } = null!;
         public string ContactPhone { get; init; } = null!;
         public string? Bio { get; init; }
-        public StaffStatus Status { get; init; }
     }
 }

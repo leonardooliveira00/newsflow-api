@@ -1,4 +1,4 @@
-﻿namespace NewsflowApi.Application.Contracts.Responses.Staffs
+﻿namespace NewsflowApi.Presentation.Dtos.Responses.Staffs
 {
     public sealed record ListStaffsResponse
     {

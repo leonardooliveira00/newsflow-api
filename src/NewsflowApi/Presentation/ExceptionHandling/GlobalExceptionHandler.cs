@@ -22,8 +22,8 @@ namespace NewsflowApi.Presentation.ExceptionHandling
 
             var problemDetails = new ProblemDetails
             {
-                Status = StatusCodes.Status500InternalServerError,
                 Title = "Internal Server Error",
+                Status = StatusCodes.Status500InternalServerError,
                 Detail = "An unexpected error has ocurred while processing the request.",
                 Instance = httpContext.Request.Path
             };

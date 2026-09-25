@@ -1,18 +1,21 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NewsflowApi.Application.Common.Pagination;
-using NewsflowApi.Application.Contracts.Requests.Staffs;
-using NewsflowApi.Application.Contracts.Responses.Staffs;
 using NewsflowApi.Application.Staffs;
 using NewsflowApi.Domain.Constants.Authorization;
 using NewsflowApi.Domain.Enums.Staffs;
+using NewsflowApi.Presentation.Dtos.Requests.Staffs;
+using NewsflowApi.Presentation.Dtos.Responses.Staffs;
 using NewsflowApi.Presentation.Extensions.Http;
 
 namespace NewsflowApi.Presentation.Controllers.Staffs
 {
     [Route("api/staffs")]
     [ApiController]
-    public class StaffsController(StaffService staffService) : ControllerBase
+    public class StaffsController(
+        StaffService staffService
+        ) : ControllerBase
     {
         private readonly StaffService _staffService = staffService;
 

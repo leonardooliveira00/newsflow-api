@@ -11,8 +11,8 @@ using NewsflowApi.IntegrationTests.Infrastructure;
 using System.Net;
 using System.Net.Http.Json;
 using NewsflowApi.Domain.Enums.Identity.Users;
-using NewsflowApi.Application.Contracts.Responses.Authentication;
 using NewsflowApi.Infrastructure.Persistence;
+using NewsflowApi.Presentation.Dtos.Responses.Authentication;
 
 namespace NewsflowApi.IntegrationTests.Authentication
 {

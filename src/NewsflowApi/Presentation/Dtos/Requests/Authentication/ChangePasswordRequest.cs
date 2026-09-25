@@ -1,4 +1,4 @@
-﻿namespace NewsflowApi.Application.Contracts.Requests.Authentication
+﻿namespace NewsflowApi.Presentation.Dtos.Requests.Authentication
 {
     public sealed class ChangePasswordRequest
     {

@@ -1,8 +1,12 @@
-﻿using NewsflowApi.Application.Authentication;
+﻿using FluentValidation;
+using FluentValidation.AspNetCore;
+using NewsflowApi.Application.Authentication;
 using NewsflowApi.Application.Authorization;
 using NewsflowApi.Application.Staffs;
 using NewsflowApi.Infrastructure.Email;
 using NewsflowApi.Infrastructure.Settings;
+using NewsflowApi.Presentation.Dtos.Requests.Staffs;
+using NewsflowApi.Presentation.Validations.Staffs;
 
 namespace NewsflowApi.Infrastructure.DependencyInjection
 {
@@ -13,6 +17,11 @@ namespace NewsflowApi.Infrastructure.DependencyInjection
             IConfiguration configuration
             )
         {
+            ValidatorOptions.Global.DefaultClassLevelCascadeMode = CascadeMode.Continue;
+            ValidatorOptions.Global.DefaultRuleLevelCascadeMode = CascadeMode.Stop;
+            services.AddValidatorsFromAssemblyContaining<RegisterStaffRequestValidator>();
+            services.AddFluentValidationAutoValidation();
+
             services.AddScoped<StaffService>();
 
             services.AddScoped<AuthService>();

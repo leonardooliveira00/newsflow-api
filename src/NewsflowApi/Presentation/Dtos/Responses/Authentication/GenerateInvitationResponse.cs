@@ -1,4 +1,4 @@
-﻿namespace NewsflowApi.Application.Contracts.Responses.Authentication
+﻿namespace NewsflowApi.Presentation.Dtos.Responses.Authentication
 {
     public sealed record GenerateInvitationResponse
     {
