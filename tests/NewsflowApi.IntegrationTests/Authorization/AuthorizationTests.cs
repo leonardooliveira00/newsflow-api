@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using NewsflowApi.Application.Authorization;
-using NewsflowApi.Application.Contracts.Requests.Staffs;
+using NewsflowApi.Presentation.Dtos.Requests.Staffs;
 using NewsflowApi.Domain.Entities.Identity.Users;
 using NewsflowApi.Domain.Entities.Staffs;
 using NewsflowApi.Domain.Enums.Identity.Users;
@@ -44,7 +44,7 @@ namespace NewsflowApi.IntegrationTests.Authorization
 
             context.Staffs.Add(staff);
 
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
             var user = new User
             {
@@ -60,7 +60,7 @@ namespace NewsflowApi.IntegrationTests.Authorization
 
             Assert.True(createResult.Succeeded);
 
-            var reporterRole = await context.Roles.FirstAsync(role => role.Name == "REPORTER");
+            var reporterRole = await context.Roles.FirstAsync(role => role.Name == "REPORTER", TestContext.Current.CancellationToken);
 
             var assignRoleResult = await userRoleManagementService.AssignRoleAsync(user.Id, reporterRole.Id);
 
@@ -74,7 +74,7 @@ namespace NewsflowApi.IntegrationTests.Authorization
 
             var client = _factory.CreateClient();
 
-            var loginResponse = await client.PostAsJsonAsync("/api/auth/login", loginRequest);
+            var loginResponse = await client.PostAsJsonAsync("/api/auth/login", loginRequest, TestContext.Current.CancellationToken);
 
             Assert.Equal(HttpStatusCode.OK, loginResponse.StatusCode);
 
@@ -87,7 +87,7 @@ namespace NewsflowApi.IntegrationTests.Authorization
                 Bio = ""
             };
 
-            var registerStaffResponse = await client.PostAsJsonAsync("/api/staffs", registerStaffRequest);
+            var registerStaffResponse = await client.PostAsJsonAsync("/api/staffs", registerStaffRequest, TestContext.Current.CancellationToken);
 
             Assert.Equal(HttpStatusCode.Forbidden, registerStaffResponse.StatusCode);
         }
@@ -118,7 +118,7 @@ namespace NewsflowApi.IntegrationTests.Authorization
 
             context.Staffs.Add(staff);
 
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
             var user = new User
             {
@@ -134,7 +134,7 @@ namespace NewsflowApi.IntegrationTests.Authorization
 
             Assert.True(createResult.Succeeded);
 
-            var adminRole = await context.Roles.FirstAsync(role => role.Name == "ADMIN");
+            var adminRole = await context.Roles.FirstAsync(role => role.Name == "ADMIN", TestContext.Current.CancellationToken);
 
             var assignRoleResult = await userRoleManagementService.AssignRoleAsync(user.Id, adminRole.Id);
 
@@ -148,7 +148,7 @@ namespace NewsflowApi.IntegrationTests.Authorization
 
             var client = _factory.CreateClient();
 
-            var loginResponse = await client.PostAsJsonAsync("/api/auth/login", loginRequest);
+            var loginResponse = await client.PostAsJsonAsync("/api/auth/login", loginRequest, TestContext.Current.CancellationToken);
 
             Assert.Equal(HttpStatusCode.OK, loginResponse.StatusCode);
 
@@ -161,7 +161,7 @@ namespace NewsflowApi.IntegrationTests.Authorization
                 Bio = ""
             };
 
-            var registerStaffResponse = await client.PostAsJsonAsync("/api/staffs", registerStaffRequest);
+            var registerStaffResponse = await client.PostAsJsonAsync("/api/staffs", registerStaffRequest, TestContext.Current.CancellationToken);
 
             Assert.Equal(HttpStatusCode.Created, registerStaffResponse.StatusCode);
         }
@@ -192,7 +192,7 @@ namespace NewsflowApi.IntegrationTests.Authorization
 
             context.Staffs.Add(staff);
 
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
             var user = new User
             {
@@ -208,9 +208,9 @@ namespace NewsflowApi.IntegrationTests.Authorization
 
             Assert.True(createUserResult.Succeeded);
 
-            var adminRole = await context.Roles.FirstAsync(role => role.Name == "ADMIN");
+            var adminRole = await context.Roles.FirstAsync(role => role.Name == "ADMIN", TestContext.Current.CancellationToken);
 
-            var assignAdminRoleResult = await userRoleManagementService.AssignRoleAsync(user.Id, adminRole.Id);
+            var assignAdminRoleResult = await userRoleManagementService.AssignRoleAsync(user.Id, adminRole.Id   );
 
             Assert.True(assignAdminRoleResult.Succeeded);
 
@@ -222,7 +222,7 @@ namespace NewsflowApi.IntegrationTests.Authorization
 
             var client = _factory.CreateClient();
 
-            var loginResponse = await client.PostAsJsonAsync("/api/auth/login", loginRequest);
+            var loginResponse = await client.PostAsJsonAsync("/api/auth/login", loginRequest, TestContext.Current.CancellationToken);
 
             Assert.Equal(HttpStatusCode.OK, loginResponse.StatusCode);
 
@@ -235,11 +235,11 @@ namespace NewsflowApi.IntegrationTests.Authorization
                 Bio = ""
             };
 
-            var registerStaffResponse = await client.PostAsJsonAsync("/api/staffs", registerStaffRequest);
+            var registerStaffResponse = await client.PostAsJsonAsync("/api/staffs", registerStaffRequest, TestContext.Current.CancellationToken);
 
             Assert.Equal(HttpStatusCode.Created, registerStaffResponse.StatusCode);
 
-            var removeRoleResponse = await client.DeleteAsync($"/api/users/{user.Id}/roles/{adminRole.Id}");
+            var removeRoleResponse = await client.DeleteAsync($"/api/users/{user.Id}/roles/{adminRole.Id}", TestContext.Current.CancellationToken);
 
             Assert.Equal(HttpStatusCode.NoContent, removeRoleResponse.StatusCode);
 
@@ -251,7 +251,7 @@ namespace NewsflowApi.IntegrationTests.Authorization
                 ContactPhone = "85987654321",
             };
 
-            var roleRemovedRegisterStaffResponse = await client.PostAsJsonAsync("/api/staffs", roleRemovedRegisterStaffRequest);
+            var roleRemovedRegisterStaffResponse = await client.PostAsJsonAsync("/api/staffs", roleRemovedRegisterStaffRequest, TestContext.Current.CancellationToken);
 
             Assert.Equal(HttpStatusCode.Unauthorized, roleRemovedRegisterStaffResponse.StatusCode);
         }

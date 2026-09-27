@@ -45,6 +45,15 @@ if (builder.Environment.IsDevelopment())
 
 var app = builder.Build();
 
+if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Testing"))
+{
+    using var scope = app.Services.CreateScope();
+
+    var context = scope.ServiceProvider.GetRequiredService<NewsflowDbContext>();
+
+    context.Database.Migrate();
+}
+
 await app.SeedDataAsync();
 
 if (app.Environment.IsDevelopment())

@@ -2,7 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
-namespace NewsflowApi.Application.Authentication
+namespace NewsflowApi.Application.Invitation
 {
     public static class InvitationTokenCodec
     {

@@ -8,11 +8,8 @@ using NewsflowApi.Domain.Entities.Authorization;
 using NewsflowApi.Domain.Entities.Identity.Users;
 using NewsflowApi.Domain.Entities.Staffs;
 
-public class NewsflowDbContext : IdentityUserContext<User, Guid>
+public class NewsflowDbContext(DbContextOptions<NewsflowDbContext> options) : IdentityUserContext<User, Guid>(options)
 {
-    public NewsflowDbContext(DbContextOptions<NewsflowDbContext> options) : base(options)
-    {
-    }
     public DbSet<Role> Roles => Set<Role>();
     public DbSet<Permission> Permissions => Set<Permission>();
     public DbSet<UserRole> UserRoles => Set<UserRole>();

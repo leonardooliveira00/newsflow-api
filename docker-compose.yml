@@ -92,10 +92,15 @@ services:
 
     volumes:
       - .:/workspace
+      - integration_api_bin:/workspace/src/NewsflowApi/bin
+      - integration_api_obj:/workspace/src/NewsflowApi/obj
+      - integration_tests_bin:/workspace/tests/NewsflowApi.IntegrationTests/bin
+      - integration_tests_obj:/workspace/tests/NewsflowApi.IntegrationTests/obj
 
     environment:
       ASPNETCORE_ENVIRONMENT: Testing
       ConnectionStrings__DefaultConnection: Host=postgres-test;Port=5432;Database=newsflow_test;Username=newsflow;Password=newsflow
+      Frontend__InvitationTokenUrl: ${Frontend__InvitationTokenUrl}
 
     depends_on:
       postgres-test:
@@ -128,3 +133,7 @@ volumes:
   dotnet_bin:
   dotnet_obj:
   data_protection_keys:
+  integration_api_bin:
+  integration_api_obj:
+  integration_tests_bin:
+  integration_tests_obj:

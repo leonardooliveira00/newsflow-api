@@ -4,14 +4,9 @@ using NewsflowApi.Infrastructure.Persistence;
 
 namespace NewsflowApi.Infrastructure.Persistence.Data.Seeds
 {
-    public class RoleSeeder
+    public class RoleSeeder(NewsflowDbContext context)
     {
-        private readonly NewsflowDbContext _context;
-
-        public RoleSeeder(NewsflowDbContext context)
-        {
-            _context = context;
-        }
+        private readonly NewsflowDbContext _context = context;
 
         public async Task SeedAsync()
         {

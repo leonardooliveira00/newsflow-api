@@ -9,7 +9,7 @@ using NewsflowApi.Infrastructure.Email;
 using NewsflowApi.Infrastructure.Persistence;
 using NewsflowApi.Infrastructure.Settings;
 
-namespace NewsflowApi.Application.Authentication
+namespace NewsflowApi.Application.Invitation
 {
     public class InvitationService(
         NewsflowDbContext context,
@@ -42,6 +42,8 @@ namespace NewsflowApi.Application.Authentication
 
             var encodedToken = InvitationTokenCodec.Encode(invitationToken);
 
+            Console.WriteLine("[INVITATION] Antes de GenerateUserTokenAsync");
+
             var invitationTokenUrl = QueryHelpers.AddQueryString(
                 _options.InvitationTokenUrl,
                 new Dictionary<string, string?>
@@ -50,6 +52,8 @@ namespace NewsflowApi.Application.Authentication
                     ["token"] = encodedToken
                 }
                 );
+
+            Console.WriteLine("[INVITATION] Depois de GenerateUserTokenAsync");
 
             await _emailService.SendEmailAsync(
                 user.Email!,
@@ -137,6 +141,5 @@ namespace NewsflowApi.Application.Authentication
 
             return ApplicationResult.Success();
         }
-
     }
 }

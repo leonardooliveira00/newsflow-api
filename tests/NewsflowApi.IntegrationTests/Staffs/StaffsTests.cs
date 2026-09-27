@@ -2,8 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using NewsflowApi.Application.Authorization;
-using NewsflowApi.Application.Contracts.Requests.Authentication;
-using NewsflowApi.Application.Contracts.Requests.Staffs;
+using NewsflowApi.Presentation.Dtos.Requests.Authentication;
+using NewsflowApi.Presentation.Dtos.Requests.Staffs;
 using NewsflowApi.Application.Staffs;
 using NewsflowApi.Domain.Entities.Identity.Users;
 using NewsflowApi.Domain.Entities.Staffs;
@@ -49,7 +49,7 @@ namespace NewsflowApi.IntegrationTests.Staffs
 
             context.Staffs.Add(staff);
 
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
             var user = new User
             {
@@ -65,7 +65,7 @@ namespace NewsflowApi.IntegrationTests.Staffs
 
             Assert.True(createUserResult.Succeeded);
 
-            var adminRole = await context.Roles.FirstAsync(role => role.Name == "ADMIN");
+            var adminRole = await context.Roles.FirstAsync(role => role.Name == "ADMIN", TestContext.Current.CancellationToken);
 
             var assignRole = await userRoleManagementService.AssignRoleAsync(user.Id, adminRole.Id);
 
@@ -79,7 +79,7 @@ namespace NewsflowApi.IntegrationTests.Staffs
 
             var client = _factory.CreateClient();
 
-            var loginResponse = await client.PostAsJsonAsync("/api/auth/login", loginRequest);
+            var loginResponse = await client.PostAsJsonAsync("/api/auth/login", loginRequest, TestContext.Current.CancellationToken);
 
             Assert.Equal(HttpStatusCode.OK, loginResponse.StatusCode);
 
@@ -92,11 +92,11 @@ namespace NewsflowApi.IntegrationTests.Staffs
                 Bio = ""
             };
 
-            var firstResponse = await client.PostAsJsonAsync("/api/staffs", registerStaffRequest);
+            var firstResponse = await client.PostAsJsonAsync("/api/staffs", registerStaffRequest, TestContext.Current.CancellationToken);
 
             Assert.Equal(HttpStatusCode.Created, firstResponse.StatusCode);
 
-            var secondResponse = await client.PostAsJsonAsync("/api/staffs", registerStaffRequest);
+            var secondResponse = await client.PostAsJsonAsync("/api/staffs", registerStaffRequest, TestContext.Current.CancellationToken);
 
             Assert.Equal(HttpStatusCode.Conflict, secondResponse.StatusCode);
         }

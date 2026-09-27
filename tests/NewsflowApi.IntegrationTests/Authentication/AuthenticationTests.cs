@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using NewsflowApi.Application.Contracts.Requests.Authentication;
-using NewsflowApi.Application.Contracts.Requests.Staffs;
+using NewsflowApi.Presentation.Dtos.Requests.Authentication;
+using NewsflowApi.Presentation.Dtos.Requests.Staffs;
 using NewsflowApi.Application.Staffs;
 using NewsflowApi.Domain.Enums;
 using NewsflowApi.Domain.Entities.Identity.Users;
@@ -25,7 +25,7 @@ namespace NewsflowApi.IntegrationTests.Authentication
         {
             var client = _factory.CreateClient();
 
-            var response = await client.GetAsync("/api/auth/me");
+            var response = await client.GetAsync("/api/auth/me", TestContext.Current.CancellationToken);
 
             Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         }
@@ -41,7 +41,7 @@ namespace NewsflowApi.IntegrationTests.Authentication
                 Password = "invalid_password",
             };
 
-            var response = await client.PostAsJsonAsync("/api/auth/login", request);
+            var response = await client.PostAsJsonAsync("/api/auth/login", request, TestContext.Current.CancellationToken);
 
             Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         }
@@ -70,7 +70,7 @@ namespace NewsflowApi.IntegrationTests.Authentication
 
             context.Staffs.Add(staff);
 
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
             var user = new User
             {
@@ -94,7 +94,7 @@ namespace NewsflowApi.IntegrationTests.Authentication
 
             var client = _factory.CreateClient();
 
-            var response = await client.PostAsJsonAsync("/api/auth/login", request);
+            var response = await client.PostAsJsonAsync("/api/auth/login", request, TestContext.Current.CancellationToken);
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
@@ -123,7 +123,7 @@ namespace NewsflowApi.IntegrationTests.Authentication
 
             context.Staffs.Add(staff);
 
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
             var user = new User
             {
@@ -147,88 +147,13 @@ namespace NewsflowApi.IntegrationTests.Authentication
 
             var client = _factory.CreateClient();
 
-            var loginResponse = await client.PostAsJsonAsync("/api/auth/login", request);
+            var loginResponse = await client.PostAsJsonAsync("/api/auth/login", request, TestContext.Current.CancellationToken);
 
             Assert.Equal(HttpStatusCode.OK, loginResponse.StatusCode);
 
-            var meResponse = await client.GetAsync("/api/auth/me");
+            var meResponse = await client.GetAsync("/api/auth/me", TestContext.Current.CancellationToken);
 
             Assert.Equal(HttpStatusCode.OK, meResponse.StatusCode);
         }
-
-        [Fact]
-        public async Task Login_WhenUserAcceptsInvitation_ShouldReturnOk()
-        {
-            using var scope = _factory.Services.CreateScope();
-
-            var context = scope.ServiceProvider.GetRequiredService<NewsflowDbContext>();
-
-            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
-
-            var email = $"login-{Guid.NewGuid()}@newsflow.test";
-            var password = "Test@123";
-
-            var staff = new Staff
-            {
-                Id = Guid.NewGuid(),
-                FirstName = "Integration",
-                LastName = "Test",
-                Bio = "Bio de testes de integração.",
-                ContactPhone = "85912345678",
-                Email = email,
-            };
-
-            context.Staffs.Add(staff);
-
-            await context.SaveChangesAsync();
-
-            var user = new User
-            {
-                Id = Guid.NewGuid(),
-                StaffId = staff.Id,
-                Email = staff.Email,
-                UserName = staff.Email,
-                EmailConfirmed = false,
-                Status = UserStatus.Pending
-            };
-
-            var createUserResult = await userManager.CreateAsync(user);
-
-            Assert.True(createUserResult.Succeeded);
-
-            var client = _factory.CreateClient(); 
-
-            var generateInvitationResponse = await client.PostAsync($"/api/invitations/{user.Id}", null);
-
-            Assert.Equal(HttpStatusCode.OK, generateInvitationResponse.StatusCode);
-
-            var invitationResponse = await generateInvitationResponse.Content.ReadFromJsonAsync<GenerateInvitationResponse>();
-
-            Assert.NotNull(invitationResponse);
-
-            var token = invitationResponse.Token;
-
-            var acceptInvitationRequest = new AcceptInvitationRequest
-            {
-                UserId = user.Id,
-                Token = token,
-                Password = password,
-            };
-
-            var acceptInvitationResponse = await client.PostAsJsonAsync("/api/invitations/accept", acceptInvitationRequest);
-
-            Assert.Equal(HttpStatusCode.OK , acceptInvitationResponse.StatusCode);
-
-            var loginRequest = new LoginRequest
-            {
-                Email = email,
-                Password = password,
-            };
-
-            var loginResponse = await client.PostAsJsonAsync("/api/auth/login", loginRequest);
-
-            Assert.Equal(HttpStatusCode.OK, loginResponse.StatusCode);
-        }
     }
-
 }

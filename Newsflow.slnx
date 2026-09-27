@@ -3,6 +3,7 @@
     <File Path=".env" />
     <File Path=".gitignore" />
     <File Path="docker-compose.yml" />
+    <File Path="global.json" />
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/NewsflowApi/NewsflowApi.csproj" />

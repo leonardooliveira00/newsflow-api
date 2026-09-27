@@ -7,6 +7,7 @@ using NewsflowApi.Infrastructure.Email;
 using NewsflowApi.Infrastructure.Settings;
 using NewsflowApi.Presentation.Dtos.Requests.Staffs;
 using NewsflowApi.Presentation.Validations.Staffs;
+using NewsflowApi.Application.Invitation;
 
 namespace NewsflowApi.Infrastructure.DependencyInjection
 {
