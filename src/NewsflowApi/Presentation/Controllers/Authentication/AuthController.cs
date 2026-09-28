@@ -6,6 +6,7 @@ using NewsflowApi.Application.Authentication;
 using NewsflowApi.Application.Authorization;
 using NewsflowApi.Application.Common;
 using NewsflowApi.Domain.Entities.Identity.Users;
+using NewsflowApi.Domain.Enums.Identity.Users;
 using NewsflowApi.Presentation.Dtos.Requests.Authentication;
 using NewsflowApi.Presentation.Dtos.Responses.Authentication;
 using NewsflowApi.Presentation.Extensions.Http;
@@ -30,7 +31,42 @@ namespace NewsflowApi.Presentation.Controllers.Authentication
                 return result.ToErrorResult();
             }
 
-            return Created();
+            var user = result.Data!;
+
+            var response = new UserResponse
+            {
+                StaffId = user.StaffId,
+                Id = user.Id,
+                Email = user.Email,
+                Status = user.Status
+            };
+
+            return CreatedAtAction(
+                nameof(GetUserById),
+                new { userId = user.Id },
+                response
+                );
+        }
+
+        [Authorize]
+        [HttpGet("{userId:guid}")]
+        public async Task<IActionResult> GetUserById(Guid userId)
+        {
+            var result = await _authService.GetUserByIdAsync(userId);
+
+            if (!result.Succeeded) return result.ToErrorResult();
+
+            var user = result.Data!;
+
+            var response = new UserResponse
+            {
+                Id = user.Id,
+                StaffId = user.StaffId,
+                Email = user.Email,
+                Status = user.Status
+            };
+
+            return Ok(response);
         }
 
         [HttpPost("login")]
