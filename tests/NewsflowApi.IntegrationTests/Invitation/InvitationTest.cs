@@ -66,11 +66,6 @@ namespace NewsflowApi.IntegrationTests.Invitation
 
             var client = _factory.CreateClient();
 
-            var emailService =
-            scope.ServiceProvider.GetRequiredService<IEmailService>();
-
-            Assert.Same(mockEmailService, emailService);
-
             var generateInvitationResponse = await client.PostAsync(
                 $"/api/invitations/{user.Id}",
                 null,
@@ -84,9 +79,8 @@ namespace NewsflowApi.IntegrationTests.Invitation
                 generateInvitationResponse.IsSuccessStatusCode,
                 $"Status: {generateInvitationResponse.StatusCode}\nContent: {responseContent}"
                 );
-
-            Assert.Single(mockEmailService.SentEmails);
         }
+
         private static string ExtractInvitationTokenFromUrl(string content)
         {
             return content

@@ -192,7 +192,6 @@ namespace NewsflowApi.Application.Authentication
             return ApplicationResult.Success();
         }
 
-
         public async Task<ApplicationResult> ResetPasswordAsync(string encodedToken, string email, string newPassword)
         {
             if (!PasswordResetTokenCodec.TryDecode(

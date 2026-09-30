@@ -101,6 +101,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Testing
       ConnectionStrings__DefaultConnection: Host=postgres-test;Port=5432;Database=newsflow_test;Username=newsflow;Password=newsflow
       Frontend__InvitationTokenUrl: ${Frontend__InvitationTokenUrl}
+      Frontend__ResetPasswordUrl: ${Frontend__ResetPasswordUrl}
 
     depends_on:
       postgres-test:

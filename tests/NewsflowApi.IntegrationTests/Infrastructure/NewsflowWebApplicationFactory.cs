@@ -74,13 +74,7 @@ namespace NewsflowApi.IntegrationTests.Infrastructure
 
         protected override IHost CreateHost(IHostBuilder builder)
         {
-            var host = base.CreateHost(builder);
-
-            using var scope = host.Services.CreateScope();
-
-            var context = scope.ServiceProvider.GetRequiredService<NewsflowDbContext>();
-
-            return host;
+           return base.CreateHost(builder);
         }
     }
 }

@@ -38,7 +38,6 @@ public static class IdentityServiceExtensions
             {
                 options.User.RequireUniqueEmail = identitySettings.RequireUniqueEmail;
                 options.SignIn.RequireConfirmedEmail = identitySettings.RequireConfirmedEmail;
-
                 options.Lockout.MaxFailedAccessAttempts = identitySettings.MaxFailedAccessAttempts;
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(identitySettings.LockoutMinutes);
                 options.Lockout.AllowedForNewUsers = identitySettings.AllowedForNewUsers;
@@ -77,7 +76,6 @@ public static class IdentityServiceExtensions
             options.Cookie.HttpOnly = cookieSettings.HttpOnly;
             options.Cookie.SecurePolicy = cookieSettings.SecurePolicy;
             options.Cookie.SameSite = cookieSettings.SameSite;
-
             options.ExpireTimeSpan = TimeSpan.FromHours(cookieSettings.ExpireHours);
             options.SlidingExpiration = cookieSettings.SlidingExpiration;
         });
