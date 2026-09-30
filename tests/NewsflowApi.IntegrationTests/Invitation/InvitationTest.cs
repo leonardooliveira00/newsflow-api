@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Http.Json;
 using System.Text;
+using Xunit.Internal;
 
 namespace NewsflowApi.IntegrationTests.Invitation
 {
@@ -23,6 +24,54 @@ namespace NewsflowApi.IntegrationTests.Invitation
         private readonly NewsflowWebApplicationFactory _factory = factory;
 
         private const string InvitationTokenPurpose = "NewsflowInvitation";
+
+        [Fact]
+        public async Task Invitation_GenerateInvitationWhenUserIsAlreadyActive_ShouldReturnConflict()
+        {
+            using var scope = _factory.Services.CreateScope();
+
+            var context = scope.ServiceProvider.GetRequiredService<NewsflowDbContext>();
+
+            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+
+            var email = $"invitation-{Guid.NewGuid()}@newsflow.test";
+
+            var staff = new Staff
+            {
+                Id = Guid.NewGuid(),
+                FirstName = "Integration",
+                LastName = "Test",
+                Email = email,
+                ContactPhone = "85912345678"
+            };
+
+            context.Add(staff);
+
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+            var user = new User
+            {
+                Id = Guid.NewGuid(),
+                StaffId = staff.Id,
+                Email = staff.Email,
+                UserName = staff.Email,
+                EmailConfirmed = true,
+                Status = UserStatus.Active,
+            };
+
+            var createdUserResult = await userManager.CreateAsync(user);
+
+            Assert.True(createdUserResult.Succeeded);
+
+            var client = _factory.CreateClient();
+
+            var generateInvitationResponse = await client.PostAsync(
+                $"/api/invitations/{user.Id}",
+                null,
+                TestContext.Current.CancellationToken);
+
+            Assert.Equal(HttpStatusCode.Conflict, generateInvitationResponse.StatusCode);
+        }
 
         [Fact]
         public async Task Invitation_GenerateInvitationToken_ShouldReturnOk()
@@ -169,6 +218,73 @@ namespace NewsflowApi.IntegrationTests.Invitation
             Assert.Equal(HttpStatusCode.OK, acceptInvitationResponse.StatusCode);
             Assert.Equal(UserStatus.Active, updatedUser.Status);
             Assert.True(updatedUser.EmailConfirmed);
+        }
+
+        [Fact]
+        public async Task Invitation_AcceptInvitationWhenTokenIsInvalid_ShouldReturnBadRequest()
+        {
+            using var scope = _factory.Services.CreateScope();
+
+            var context = scope.ServiceProvider.GetRequiredService<NewsflowDbContext>();
+
+            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+
+            var email = $"accept-inviation-{Guid.NewGuid()}@newsflow.test";
+            var password = "Test@123";
+
+            var staff = new Staff
+            {
+                Id = Guid.NewGuid(),
+                FirstName = "Integration",
+                LastName = "Test",
+                ContactPhone = "85912345678",
+                Email = email,
+            };
+
+            context.Add(staff);
+
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+            var user = new User
+            {
+                Id = Guid.NewGuid(),
+                StaffId = staff.Id,
+                Email = staff.Email,
+                UserName = staff.Email,
+                EmailConfirmed = false,
+                Status = UserStatus.Pending,
+            };
+
+            var createUserResult = await userManager.CreateAsync(user, password);
+
+            Assert.True(createUserResult.Succeeded);
+
+            var client = _factory.CreateClient();
+
+            var invitationToken = await userManager.GenerateUserTokenAsync(
+                    user,
+                    TokenOptions.DefaultProvider,
+                    InvitationTokenPurpose
+                    );
+
+            var invalidToken = $"{invitationToken}-invalid-token";
+
+            var encodedToken = InvitationTokenCodec.Encode(invalidToken);
+
+            var request = new AcceptInvitationRequest
+            {
+                UserId = user.Id,
+                Password = password,
+                Token = encodedToken
+            };
+
+            var acceptInvitationResponse = await client.PostAsJsonAsync(
+               $"/api/invitations/accept",
+               request,
+               TestContext.Current.CancellationToken
+               );
+
+            Assert.Equal(HttpStatusCode.BadRequest, acceptInvitationResponse.StatusCode);
         }
     }
 }
