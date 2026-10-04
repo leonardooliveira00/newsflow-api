@@ -1,6 +1,6 @@
 # Newsflow API
 
-O Newsflow é uma API de gestão editorial voltada para portfólios, desenvolvida com ASP.NET Core e PostgreSQL, que conta com autenticação, permissões baseadas em funções, gestão de equipe, ativação de conta via convite, testes de integração e infraestrutura de desenvolvimento conteinerizada com Docker.
+O Newsflow é uma API de gestão editorial voltada para portfólio, desenvolvida com ASP.NET Core e PostgreSQL, que conta com autenticação, permissões baseadas em funções, gestão de equipe, ativação de conta via convite, testes de integração e infraestrutura de desenvolvimento conteinerizada com Docker.
 
 O objetivo do projeto é fornecer uma base sólida para a construção de um CMS completo, com foco em segurança, escalabilidade e boas práticas de desenvolvimento, simulando um ambiente de produção realista para desenvolvimento e testes.
 
@@ -24,7 +24,6 @@ O objetivo do projeto é fornecer uma base sólida para a construção de um CMS
 | **FluentValidation**                 | Validação dos requests                          |
 | **MailKit**                          | Envio de e-mails                                |
 | **Docker / Docker Compose**          | Ambiente de desenvolvimento e testes            |
-| **Redis 8**                          | Serviço de infraestrutura preparado no ambiente |
 | **xUnit v3**                         | Testes                                          |
 | **Microsoft.AspNetCore.Mvc.Testing** | Testes de integração                            |
 | **Microsoft Testing Platform**       | Execução dos testes                             |
@@ -37,7 +36,6 @@ O objetivo do projeto é fornecer uma base sólida para a construção de um CMS
 ---
 config:
   theme: neo-dark
-  curve: stepline
 ---
 flowchart TB
     Reader["Client"] --> API["Newsflow API"]
