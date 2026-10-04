@@ -36,31 +36,33 @@ O objetivo do projeto é fornecer uma base sólida para a construção de um CMS
 ```mermaid
 ---
 config:
-  theme: dark
-  look: neo
-  layout: elk
+  theme: neo-dark
 ---
 flowchart TB
-    Reader["Client"] -- <br> --> API["Newsflow API"]
+    Reader["Client"] --> API["Newsflow API"]
     API --> DB["PostgreSQL"] & Mail["Mailpit"]
-    Tests["Integration Tests"] --> n2["PostrgreSQL Tests"] & API
+    Tests["Integration Tests"] --> DBTests["PostgreSQL Tests"] & API
 
     Reader@{ shape: rounded}
     API@{ shape: rounded}
     DB@{ shape: db}
     Mail@{ shape: rounded}
-    n2@{ shape: db}
+    Tests@{ shape: rounded}
+    DBTests@{ shape: db}
+     Reader:::Aqua
+     API:::Aqua
+     DB:::Aqua
+     Mail:::Aqua
+     Tests:::Aqua
+     DBTests:::Aqua
+    classDef Aqua stroke-width:1px, stroke-dasharray:none, stroke:#46EDC8, fill:#DEFFF8, color:#378E7A
     style Reader fill:#00284d,color:#99ceff
     style API fill:#00284d,color:#99ceff
     style DB fill:#00284d,color:#99ceff
     style Mail fill:#00284d,color:#99ceff
     style Tests fill:#00284d,color:#99ceff
-    style n2 fill:#00284d,color:#99ceff
-    linkStyle 0 stroke:#99ceff,fill:none
-    linkStyle 1 stroke:#99ceff,fill:none
-    linkStyle 2 stroke:#99ceff,fill:none
-    linkStyle 3 stroke:#99ceff,fill:none
-    linkStyle 4 stroke:#99ceff,fill:none
+    style DBTests fill:#00284d,color:#99ceff
+
 ```
 
 ---
