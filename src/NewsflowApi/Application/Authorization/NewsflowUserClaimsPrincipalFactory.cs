@@ -5,7 +5,10 @@ using System.Security.Claims;
 
 namespace NewsflowApi.Application.Authorization
 {
-    public sealed class NewsflowUserClaimsPrincipalFactory(UserManager<User> userManager, IOptions<IdentityOptions> optionsAccessor, AuthorizationService authorizationService) : UserClaimsPrincipalFactory<User>(userManager, optionsAccessor)
+    public sealed class NewsflowUserClaimsPrincipalFactory(
+        UserManager<User> userManager, 
+        IOptions<IdentityOptions> optionsAccessor, 
+        AuthorizationService authorizationService) : UserClaimsPrincipalFactory<User>(userManager, optionsAccessor)
     {
         private readonly AuthorizationService _authorizationService = authorizationService;
 

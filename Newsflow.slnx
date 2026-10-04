@@ -4,6 +4,7 @@
     <File Path=".gitignore" />
     <File Path="docker-compose.yml" />
     <File Path="global.json" />
+    <File Path="README.md" />
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/NewsflowApi/NewsflowApi.csproj" />
