@@ -34,10 +34,6 @@ O objetivo do projeto é fornecer uma base sólida para a construção de um CMS
 ## Infraestrutura da aplicação
 
 ```mermaid
----
-config:
-  theme: neo-dark
----
 flowchart TB
     Reader["Client"] --> API["Newsflow API"]
     API --> DB["PostgreSQL"] & Mail["Mailpit"]
