@@ -34,27 +34,35 @@ O objetivo do projeto é fornecer uma base sólida para a construção de um CMS
 ## Infraestrutura da aplicação
 
 ```mermaid
+---
+config:
+  theme: neo-dark
+  curve: stepline
+---
 flowchart TB
     Reader["Client"] --> API["Newsflow API"]
+    API --> DB["PostgreSQL"] & Mail["Mailpit"]
+    Tests["Integration Tests"] --> DBTests["PostgreSQL Tests"] & API
 
-    API --> DB["PostgreSQL"]
-    API --> Mail["Mailpit"]
-
-    Tests["Integration Tests"] --> DBTests["PostgreSQL Tests"]
-    Tests --> API
-
+    Reader@{ shape: rounded}
+    API@{ shape: rounded}
+    DB@{ shape: db}
+    Mail@{ shape: rounded}
+    Tests@{ shape: rounded}
+    DBTests@{ shape: db}
+     Reader:::Aqua
+     API:::Aqua
+     DB:::Aqua
+     Mail:::Aqua
+     Tests:::Aqua
+     DBTests:::Aqua
+    classDef Aqua stroke-width:1px, stroke-dasharray:none, stroke:#46EDC8, fill:#DEFFF8, color:#378E7A
     style Reader fill:#00284d,color:#99ceff
     style API fill:#00284d,color:#99ceff
     style DB fill:#00284d,color:#99ceff
     style Mail fill:#00284d,color:#99ceff
     style Tests fill:#00284d,color:#99ceff
     style DBTests fill:#00284d,color:#99ceff
-
-    linkStyle 0 stroke:#99ceff
-    linkStyle 1 stroke:#99ceff
-    linkStyle 2 stroke:#99ceff
-    linkStyle 3 stroke:#99ceff
-    linkStyle 4 stroke:#99ceff
 
 ```
 
