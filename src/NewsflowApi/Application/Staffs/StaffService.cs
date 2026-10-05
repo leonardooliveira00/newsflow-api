@@ -216,7 +216,9 @@ namespace NewsflowApi.Application.Staffs
 
                 if (!stampResult.Succeeded)
                 {
-                    throw new InvalidOperationException();
+                    throw new InvalidOperationException(
+                        "Failed to update the user's security stamp."
+                    );
                 }
             }
 
@@ -226,6 +228,5 @@ namespace NewsflowApi.Application.Staffs
 
             return ApplicationResult.Success();
         }
-
     }
 }

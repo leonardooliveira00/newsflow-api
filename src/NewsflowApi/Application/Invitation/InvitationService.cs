@@ -42,8 +42,6 @@ namespace NewsflowApi.Application.Invitation
 
             var encodedToken = InvitationTokenCodec.Encode(invitationToken);
 
-            Console.WriteLine("[INVITATION] Antes de GenerateUserTokenAsync");
-
             var invitationTokenUrl = QueryHelpers.AddQueryString(
                 _options.InvitationTokenUrl,
                 new Dictionary<string, string?>
@@ -52,8 +50,6 @@ namespace NewsflowApi.Application.Invitation
                     ["token"] = encodedToken
                 }
                 );
-
-            Console.WriteLine("[INVITATION] Depois de GenerateUserTokenAsync");
 
             await _emailService.SendEmailAsync(
                 user.Email!,
@@ -134,7 +130,9 @@ namespace NewsflowApi.Application.Invitation
 
             if (!updatedResult.Succeeded)
             {
-                throw new InvalidOperationException();
+                throw new InvalidOperationException(
+                    "Failed to accept invitation."
+                );
             }
 
             await transaction.CommitAsync();

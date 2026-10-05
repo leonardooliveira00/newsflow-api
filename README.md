@@ -209,12 +209,6 @@ O PostgreSQL ficará disponível em:
 localhost:5432
 ```
 
-O Redis:
-
-```text
-localhost:6379
-```
-
 O Mailpit:
 
 ```text

@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using NewsflowApi.Application.Authorization;
 using NewsflowApi.Application.Common.Application;
 using NewsflowApi.Application.Common.Errors;
 using NewsflowApi.Domain.Entities.Identity.Users;
@@ -17,70 +16,14 @@ namespace NewsflowApi.Application.Authentication
     public class AuthService(
         UserManager<User> userManager,
         SignInManager<User> signInManager,
-        NewsflowDbContext context,
-        AuthorizationService authorizationService,
         IEmailService emailService,
         IOptions<FrontendSettings> frontendOptions
             )
     {
         private readonly UserManager<User> _userManager = userManager;
         private readonly SignInManager<User> _signInManager = signInManager;
-        private readonly NewsflowDbContext _context = context;
-        private readonly AuthorizationService _authorizationService = authorizationService;
         private readonly IEmailService _emailService = emailService;
         private readonly FrontendSettings _frontendOptions = frontendOptions.Value;
-
-        public async Task<ApplicationResult<User>> CreateUserForStaffAsync(Guid staffId, string email)
-        {
-            var staff = await _context.Staffs.Include(staff => staff.User).FirstOrDefaultAsync(staff => staff.Id == staffId);
-
-            if (staff is null) return ApplicationResult<User>.Failure(StaffErrors.NotFound);
-
-            if (staff.User is not null) return ApplicationResult<User>.Failure(UserErrors.UserAlreadyExists);
-
-            var existingEmail = await _userManager.FindByEmailAsync(email);
-
-            if (existingEmail is not null) return ApplicationResult<User>.Failure(UserErrors.EmailAlreadyInUse);
-
-            var user = new User
-            {
-                Id = Guid.NewGuid(),
-                StaffId = staff.Id,
-                Email = email,
-                UserName = email,
-                EmailConfirmed = false,
-                Status = UserStatus.Pending
-            };
-
-            var identityResult = await _userManager.CreateAsync(user);
-
-            if (!identityResult.Succeeded)
-            {
-                var errorMessage = string.Join(
-                    " ",
-                    identityResult.Errors.Select(error => error.Description)
-                    );
-
-                var error = new ApplicationError(
-                    UserErrors.UserCreationFailed.Code,
-                    errorMessage,
-                    UserErrors.UserCreationFailed.Type
-                    );
-
-                return ApplicationResult<User>.Failure(error);
-            }
-
-            return ApplicationResult<User>.Success(user);
-        }
-
-        public async Task<ApplicationResult<User>> GetUserByIdAsync(Guid userId)
-        {
-            var user = await _userManager.FindByIdAsync(userId.ToString());
-
-            if (user is null) return ApplicationResult<User>.Failure(UserErrors.NotFound);
-
-            return ApplicationResult<User>.Success(user);
-        }
 
         public async Task<ApplicationResult> SignInAsync(string email, string password)
         {

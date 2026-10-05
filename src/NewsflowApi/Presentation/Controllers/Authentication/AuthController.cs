@@ -21,54 +21,6 @@ namespace NewsflowApi.Presentation.Controllers.Authentication
         private readonly AuthService _authService = authService;
         private readonly UserManager<User> _userManager = userManager;
 
-        [HttpPost("create-user")]
-        public async Task<IActionResult> ProvideAccess([FromBody] CreateUserForStaffRequest request)
-        {
-            var result = await _authService.CreateUserForStaffAsync(request.StaffId, request.Email);
-
-            if (!result.Succeeded)
-            {
-                return result.ToErrorResult();
-            }
-
-            var user = result.Data!;
-
-            var response = new UserResponse
-            {
-                StaffId = user.StaffId,
-                Id = user.Id,
-                Email = user.Email,
-                Status = user.Status
-            };
-
-            return CreatedAtAction(
-                nameof(GetUserById),
-                new { userId = user.Id },
-                response
-                );
-        }
-
-        [Authorize]
-        [HttpGet("{userId:guid}")]
-        public async Task<IActionResult> GetUserById(Guid userId)
-        {
-            var result = await _authService.GetUserByIdAsync(userId);
-
-            if (!result.Succeeded) return result.ToErrorResult();
-
-            var user = result.Data!;
-
-            var response = new UserResponse
-            {
-                Id = user.Id,
-                StaffId = user.StaffId,
-                Email = user.Email,
-                Status = user.Status
-            };
-
-            return Ok(response);
-        }
-
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {

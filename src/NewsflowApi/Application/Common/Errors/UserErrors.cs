@@ -22,6 +22,18 @@ namespace NewsflowApi.Application.Common.Errors
             ApplicationErrorType.Conflict
             );
 
+        public static readonly ApplicationError Suspended = new(
+            "user_suspended",
+            "User is suspended.",
+            ApplicationErrorType.Conflict
+            );
+
+        public static readonly ApplicationError Inactive = new(
+            "user_inactive",
+            "User is inactive.",
+            ApplicationErrorType.Conflict
+            );
+
         public static readonly ApplicationError UserAlreadyExists = new(
             "user_already_exists",
             "User already exists.",
@@ -34,7 +46,7 @@ namespace NewsflowApi.Application.Common.Errors
             ApplicationErrorType.Conflict
             );
 
-        public static readonly ApplicationError UserCreationFailed = new(
+        public static readonly ApplicationError CreationFailed = new(
             "user_creation_failed",
             "User creation failed.",
             ApplicationErrorType.Validation
