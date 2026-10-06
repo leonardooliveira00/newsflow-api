@@ -8,6 +8,7 @@ using NewsflowApi.Infrastructure.Settings;
 using NewsflowApi.Presentation.Dtos.Requests.Staffs;
 using NewsflowApi.Presentation.Validations.Staffs;
 using NewsflowApi.Application.Invitation;
+using NewsflowApi.Application.Users;
 
 namespace NewsflowApi.Infrastructure.DependencyInjection
 {
@@ -24,6 +25,8 @@ namespace NewsflowApi.Infrastructure.DependencyInjection
             services.AddFluentValidationAutoValidation();
 
             services.AddScoped<StaffService>();
+
+            services.AddScoped<UserService>();
 
             services.AddScoped<AuthService>();
 
