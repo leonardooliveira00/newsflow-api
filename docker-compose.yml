@@ -1,12 +1,12 @@
-name: newsflowapi
+name: wavensapi
 
 services:
   api:
     build:
-      context: ./src/NewsflowApi
-      dockerfile: dockerfile.dev
+      context: ./src/WavensApi
+      dockerfile: Dockerfile.dev
 
-    container_name: newsflow-api
+    container_name: wavens-api
 
     restart: unless-stopped
 
@@ -16,8 +16,8 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       DOTNET_USE_POLLING_FILE_WATCHER: true
-      ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=newsflow;Username=newsflow;Password=newsflow
-      DevelopmentAdmin__Password: ${NEWSFLOW_DEV_ADMIN_PASSWORD}
+      ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=wavens;Username=wavens;Password=wavens
+      DevelopmentAdmin__Password: ${WAVENS_DEV_ADMIN_PASSWORD}
       Email__Host: ${Email__Host}
       Email__Port: ${Email__Port}
       Email__UseTls: ${Email__UseTls}
@@ -30,11 +30,9 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      redis:
-        condition: service_healthy
 
     volumes:
-      - ./src/NewsflowApi:/app
+      - ./src/WavensApi:/app
       - dotnet_bin:/app/bin
       - dotnet_obj:/app/obj
       - data_protection_keys:/app/data-protection-keys
@@ -42,7 +40,7 @@ services:
   postgres:
     image: postgres:18
 
-    container_name: newsflow-postgres
+    container_name: wavens-postgres
 
     restart: unless-stopped
 
@@ -50,15 +48,15 @@ services:
       - '5432:5432'
 
     environment:
-      POSTGRES_DB: newsflow
-      POSTGRES_USER: newsflow
-      POSTGRES_PASSWORD: newsflow
+      POSTGRES_DB: wavens
+      POSTGRES_USER: wavens
+      POSTGRES_PASSWORD: wavens
 
     volumes:
       - postgres_data:/var/lib/postgresql
 
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U newsflow -d newsflow']
+      test: ['CMD-SHELL', 'pg_isready -U wavens -d wavens']
       interval: 5s
       timeout: 5s
       retries: 5
@@ -67,19 +65,19 @@ services:
     image: postgres:18
 
     environment:
-      POSTGRES_DB: newsflow_test
-      POSTGRES_USER: newsflow
-      POSTGRES_PASSWORD: newsflow
+      POSTGRES_DB: wavens_test
+      POSTGRES_USER: wavens
+      POSTGRES_PASSWORD: wavens
 
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U newsflow -d newsflow_test']
+      test: ['CMD-SHELL', 'pg_isready -U wavens -d wavens_test']
       interval: 5s
       timeout: 5s
       retries: 5
 
   mailpit:
     image: axllent/mailpit
-    container_name: newsflow-mailpit
+    container_name: wavens-mailpit
     restart: unless-stopped
     ports:
       - 8025:8025
@@ -92,14 +90,14 @@ services:
 
     volumes:
       - .:/workspace
-      - integration_api_bin:/workspace/src/NewsflowApi/bin
-      - integration_api_obj:/workspace/src/NewsflowApi/obj
-      - integration_tests_bin:/workspace/tests/NewsflowApi.IntegrationTests/bin
-      - integration_tests_obj:/workspace/tests/NewsflowApi.IntegrationTests/obj
+      - integration_api_bin:/workspace/src/WavensApi/bin
+      - integration_api_obj:/workspace/src/WavensApi/obj
+      - integration_tests_bin:/workspace/tests/WavensApi.IntegrationTests/bin
+      - integration_tests_obj:/workspace/tests/WavensApi.IntegrationTests/obj
 
     environment:
       ASPNETCORE_ENVIRONMENT: Testing
-      ConnectionStrings__DefaultConnection: Host=postgres-test;Port=5432;Database=newsflow_test;Username=newsflow;Password=newsflow
+      ConnectionStrings__DefaultConnection: Host=postgres-test;Port=5432;Database=wavens_test;Username=wavens;Password=wavens
       Frontend__InvitationTokenUrl: ${Frontend__InvitationTokenUrl}
       Frontend__ResetPasswordUrl: ${Frontend__ResetPasswordUrl}
 
@@ -107,30 +105,10 @@ services:
       postgres-test:
         condition: service_healthy
 
-    command: dotnet test tests/NewsflowApi.IntegrationTests/NewsflowApi.IntegrationTests.csproj
-
-  redis:
-    image: redis:8-alpine
-
-    container_name: newsflow-redis
-
-    restart: unless-stopped
-
-    ports:
-      - '6379:6379' 
-
-    volumes:
-      - redis_data:/data
-
-    healthcheck:
-      test: ['CMD', 'redis-cli', 'ping']
-      interval: 5s
-      timeout: 3s
-      retries: 5
+    command: dotnet test tests/WavensApi.IntegrationTests/WavensApi.IntegrationTests.csproj
 
 volumes:
   postgres_data:
-  redis_data:
   dotnet_bin:
   dotnet_obj:
   data_protection_keys:

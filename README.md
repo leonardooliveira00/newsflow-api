@@ -1,6 +1,6 @@
-# Newsflow API
+# Wavens API
 
-O Newsflow é uma API de gestão editorial voltada para portfólio, desenvolvida com ASP.NET Core e PostgreSQL, que conta com autenticação, permissões baseadas em funções, gestão de equipe, ativação de conta via convite, testes de integração e infraestrutura de desenvolvimento conteinerizada com Docker.
+O Wavens é uma API de gestão editorial voltada para portfólio, desenvolvida com ASP.NET Core e PostgreSQL, que conta com autenticação, permissões baseadas em funções, gestão de equipe, ativação de conta via convite, testes de integração e infraestrutura de desenvolvimento conteinerizada com Docker.
 
 O objetivo do projeto é fornecer uma base sólida para a construção de um CMS completo, com foco em segurança, escalabilidade e boas práticas de desenvolvimento, simulando um ambiente de produção realista para desenvolvimento e testes.
 
@@ -38,7 +38,7 @@ config:
   theme: neo-dark
 ---
 flowchart TB
-    Reader["Client"] --> API["Newsflow API"]
+    Reader["Client"] --> API["Wavens API"]
     API --> DB["PostgreSQL"] & Mail["Mailpit"]
     Tests["Integration Tests"] --> DBTests["PostgreSQL Tests"] & API
 
@@ -68,7 +68,7 @@ flowchart TB
 
 ## Funcionalidades atuais
 
-### ✉️ Convites
+### Convites
 
 * Criação de usuários inicialmente em estado `Pending`
 * Geração de tokens de convite
@@ -161,8 +161,8 @@ Atualmente:
 ## 1. Clone o repositório
 
 ```bash
-git clone https://github.com/leonardooliveira00/newsflow-api.git
-cd newsflow-api
+git clone https://github.com/leonardooliveira00/wavens-api.git
+cd wavens-api
 ```
 
 ---
@@ -174,20 +174,20 @@ O arquivo `.env` é ignorado pelo Git porque contém configurações que podem i
 Um exemplo para desenvolvimento local utilizando o Mailpit:
 
 ```env
-NEWSFLOW_DEV_ADMIN_PASSWORD=Admin@123456
+WAVENS_DEV_ADMIN_PASSWORD=Admin@123456
 
 Email__Host=mailpit
 Email__Port=1025
 Email__UseTls=false
 Email__UseAuthentication=false
-Email__SenderEmail=no-reply@newsflow.local
-Email__SenderName=Newsflow
+Email__SenderEmail=no-reply@wavens.local
+Email__SenderName=Wavens
 
 Frontend__InvitationTokenUrl=http://localhost:3001/invitation
 Frontend__ResetPasswordUrl=http://localhost:3001/reset-password
 ```
 
-> O valor de `NEWSFLOW_DEV_ADMIN_PASSWORD` deve ser definido localmente e não deve ser versionado.
+> O valor de `WAVENS_DEV_ADMIN_PASSWORD` deve ser definido localmente e não deve ser versionado.
 
 ---
 
@@ -224,8 +224,8 @@ Quando executada no ambiente `Development`, a aplicação realiza seed dos dados
 O seed cria inicialmente Staffs de desenvolvimento, incluindo:
 
 ```text
-admin@newsflow.com
-reporter@newsflow.com
+admin@wavens.com
+reporter@wavens.com
 ```
 
 O usuário administrador recebe a role:
@@ -243,7 +243,7 @@ DevelopmentAdmin__Password
 que, no Docker Compose, é alimentada por:
 
 ```text
-NEWSFLOW_DEV_ADMIN_PASSWORD
+WAVENS_DEV_ADMIN_PASSWORD
 ```
 
 ---
@@ -253,7 +253,7 @@ NEWSFLOW_DEV_ADMIN_PASSWORD
 As migrations do Entity Framework Core ficam em:
 
 ```text
-src/NewsflowApi/Infrastructure/Persistence/Data/Migrations/
+src/WavensApi/Infrastructure/Persistence/Data/Migrations/
 ```
 
 O projeto possui o `dotnet-ef` como ferramenta local.
@@ -268,16 +268,16 @@ Para criar uma migration:
 
 ```bash
 dotnet ef migrations add MigrationName \
-  --project src/NewsflowApi \
-  --startup-project src/NewsflowApi
+  --project src/WavensApi \
+  --startup-project src/WavensApi
 ```
 
 Para aplicar migrations manualmente:
 
 ```bash
 dotnet ef database update \
-  --project src/NewsflowApi \
-  --startup-project src/NewsflowApi
+  --project src/WavensApi \
+  --startup-project src/WavensApi
 ```
 
 Em `Development` e `Testing`, a aplicação também executa:
