@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace NewsflowApi.Presentation.Dtos.Requests.Authentication
+﻿namespace NewsflowApi.Presentation.Dtos.Requests.Authentication
 {
     public sealed record LoginRequest
     {

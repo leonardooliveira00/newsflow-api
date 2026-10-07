@@ -92,6 +92,7 @@ namespace NewsflowApi.Application.Staffs
                     Id = staff.Id,
                     FirstName = staff.FirstName,
                     LastName = staff.LastName,
+                    Email = staff.Email,
                     CreatedAt = staff.CreatedAt,
                 })
                 .ToListAsync();

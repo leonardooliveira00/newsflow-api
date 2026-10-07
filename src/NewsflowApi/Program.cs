@@ -36,6 +36,18 @@ builder.Services.AddControllers()
         };
     });
 
+var AllowedOrigins = "_AllowedOrigins";
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: AllowedOrigins,
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:4200")
+            .AllowCredentials();
+        });
+});
+
 builder.Services.AddOpenApi();
 
 if (builder.Environment.IsDevelopment())
@@ -61,11 +73,17 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
+
 app.UseExceptionHandler();
 
 app.UseHttpsRedirection();
 
+app.UseRouting();
+
+app.UseCors(AllowedOrigins);
+
 app.UseAuthentication();
+
 app.UseAuthorization();
 
 app.MapControllers();

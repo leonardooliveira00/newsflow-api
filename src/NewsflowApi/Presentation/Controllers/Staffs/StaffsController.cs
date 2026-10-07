@@ -80,6 +80,7 @@ namespace NewsflowApi.Presentation.Controllers.Staffs
                     Id = staff.Id,
                     FirstName = staff.FirstName,
                     LastName = staff.LastName,
+                    Email = staff.Email,
                 })
                 .ToList();
 
